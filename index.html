@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
 
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 <header class="topbar">
@@ -24,6 +24,7 @@
   <nav class="tabs">
     <button class="tab-btn active" data-tab="menu">Меню</button>
     <button class="tab-btn" data-tab="dishes">Страви</button>
+    <button class="tab-btn" data-tab="iron">Топ-100 заліза</button>
   </nav>
 </header>
 
@@ -64,8 +65,21 @@
       </form>
     </div>
   </section>
+
+  <section id="tab-iron" class="tab-panel">
+    <div class="iron-callout">
+      <p>Значення орієнтовні (мг заліза на 100 г продукту), зібрані з відкритих харчових баз даних (USDA та інші). Сприймайте як довідковий орієнтир, а не аптечну точність.</p>
+      <p><strong>Верхівка списку:</strong> сушені спеції, трави, гриби та спіруліна мають шалено високий показник на 100 г, але порція таких продуктів зазвичай 1-3 г — тож реальний внесок у добову норму мінімальний.</p>
+      <p><strong>Гемове vs негемове:</strong> м'ясо, риба, морепродукти та печінка містять гемове залізо (засвоюється 15-35%), рослинні продукти — негемове (2-20%). Тобто менша цифра з гемового джерела може дати організму більше заліза, ніж більша цифра з рослинного.</p>
+    </div>
+    <div class="iron-filters">
+      <input type="text" id="iron-search" placeholder="Пошук продукту...">
+      <select id="iron-category-filter"></select>
+    </div>
+    <div id="iron-list" class="iron-list"></div>
+  </section>
 </main>
 
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
