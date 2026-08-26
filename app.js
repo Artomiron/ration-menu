@@ -240,6 +240,7 @@ function ensureWeekData(weekKey) {
 
 let currentMondayDate = currentMonday();
 let dishSearchTerm = '';
+const expandedRecipeKeys = new Set();
 
 // ---------- Рендер: Меню ----------
 
@@ -381,6 +382,8 @@ function renderDays() {
       const slot = document.createElement('div');
       slot.className = 'meal-slot';
       const dish = dishId ? findDish(dishId) : null;
+      const recipeKey = `${weekKey}-${dayIndex}-${mealIndex}`;
+      const isExpanded = expandedRecipeKeys.has(recipeKey);
       slot.innerHTML = `
         <label>Прийом ${mealIndex + 1}</label>
         <div class="meal-combobox">
@@ -388,12 +391,25 @@ function renderDays() {
           <input type="text" class="meal-combo-input" autocomplete="off" placeholder="Пошук страви..." value="${dish ? escapeHTML(dish.name) : ''}" hidden>
           <div class="meal-combo-dropdown" hidden></div>
         </div>
-        <div class="meal-recipe ${dish && dish.recipe ? '' : 'empty'}">
-          ${dish ? (dish.recipe ? escapeHTML(dish.recipe) : 'Рецепт не додано') : ''}
-        </div>
+        ${dish ? `
+          <button type="button" class="meal-recipe-toggle" aria-expanded="${isExpanded}">
+            <span>Рецепт</span>
+            <span class="meal-recipe-arrow">${isExpanded ? '▲' : '▼'}</span>
+          </button>
+          ${isExpanded ? `<div class="meal-recipe ${dish.recipe ? '' : 'empty'}">${dish.recipe ? escapeHTML(dish.recipe) : 'Рецепт не додано'}</div>` : ''}
+        ` : ''}
       `;
       grid.appendChild(slot);
       attachMealCombobox(slot.querySelector('.meal-combobox'), dayData, mealIndex);
+
+      const recipeToggle = slot.querySelector('.meal-recipe-toggle');
+      if (recipeToggle) {
+        recipeToggle.addEventListener('click', () => {
+          if (expandedRecipeKeys.has(recipeKey)) expandedRecipeKeys.delete(recipeKey);
+          else expandedRecipeKeys.add(recipeKey);
+          renderDays();
+        });
+      }
     });
 
     card.appendChild(grid);

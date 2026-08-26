@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
 
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <header class="topbar">
@@ -30,11 +30,15 @@
 <main>
   <section id="tab-menu" class="tab-panel active">
     <div class="week-controls">
-      <label for="week-picker">Тиждень:</label>
-      <input type="week" id="week-picker">
-      <span id="week-range" class="week-range"></span>
-      <button id="prev-week" title="Попередній тиждень">←</button>
-      <button id="next-week" title="Наступний тиждень">→</button>
+      <div class="week-picker-group">
+        <label for="week-picker">Тиждень:</label>
+        <input type="week" id="week-picker">
+      </div>
+      <div class="week-nav-group">
+        <span id="week-range" class="week-range"></span>
+        <button id="prev-week" title="Попередній тиждень">←</button>
+        <button id="next-week" title="Наступний тиждень">→</button>
+      </div>
     </div>
     <div id="days-container" class="days-container"></div>
   </section>
@@ -62,6 +66,6 @@
   </section>
 </main>
 
-<script src="app.js?v=5"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>

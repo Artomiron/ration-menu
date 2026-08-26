@@ -69,9 +69,16 @@ main {
 .week-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+}
+
+.week-picker-group,
+.week-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .week-controls input[type="week"] {
@@ -80,6 +87,8 @@ main {
   color: var(--text);
   padding: 6px 10px;
   border-radius: var(--radius);
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .week-controls button {
@@ -89,6 +98,7 @@ main {
   padding: 6px 12px;
   border-radius: var(--radius);
   cursor: pointer;
+  flex: 0 0 auto;
 }
 
 .week-controls button:hover { background: var(--bg-card-hover); }
@@ -96,6 +106,22 @@ main {
 .week-range {
   color: var(--text-dim);
   font-size: 0.9rem;
+  flex: 1 1 auto;
+}
+
+@media (max-width: 520px) {
+  .week-picker-group,
+  .week-nav-group {
+    width: 100%;
+  }
+
+  .week-controls input[type="week"] {
+    width: 100%;
+  }
+
+  .week-nav-group {
+    justify-content: space-between;
+  }
 }
 
 .days-container {
@@ -272,8 +298,31 @@ main {
   text-align: center;
 }
 
-.meal-recipe {
+.meal-recipe-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   margin-top: 6px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-family: inherit;
+  padding: 4px 2px;
+  cursor: pointer;
+}
+
+.meal-recipe-toggle:hover {
+  color: var(--text);
+}
+
+.meal-recipe-arrow {
+  font-size: 0.7rem;
+}
+
+.meal-recipe {
+  margin-top: 4px;
   font-size: 0.8rem;
   color: var(--text-dim);
   white-space: pre-wrap;
