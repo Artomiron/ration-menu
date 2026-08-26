@@ -285,6 +285,7 @@ function renderComboOptionsHTML(term, selectedId) {
 }
 
 function attachMealCombobox(wrapper, dayData, mealIndex) {
+  const display = wrapper.querySelector('.meal-combo-display');
   const input = wrapper.querySelector('.meal-combo-input');
   const dropdown = wrapper.querySelector('.meal-combo-dropdown');
 
@@ -297,6 +298,22 @@ function attachMealCombobox(wrapper, dayData, mealIndex) {
     dropdown.innerHTML = renderComboOptionsHTML(term, dayData.meals[mealIndex]);
     dropdown.hidden = false;
   };
+
+  const startEditing = () => {
+    const dish = currentDish();
+    display.hidden = true;
+    input.hidden = false;
+    input.value = dish ? dish.name : '';
+    input.focus();
+  };
+
+  display.addEventListener('click', startEditing);
+  display.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      startEditing();
+    }
+  });
 
   input.addEventListener('focus', () => {
     input.select();
@@ -325,8 +342,8 @@ function attachMealCombobox(wrapper, dayData, mealIndex) {
   input.addEventListener('blur', () => {
     setTimeout(() => {
       dropdown.hidden = true;
-      const dish = currentDish();
-      input.value = dish ? dish.name : '';
+      input.hidden = true;
+      display.hidden = false;
     }, 100);
   });
 }
@@ -367,7 +384,8 @@ function renderDays() {
       slot.innerHTML = `
         <label>Прийом ${mealIndex + 1}</label>
         <div class="meal-combobox">
-          <input type="text" class="meal-combo-input" autocomplete="off" placeholder="Пошук страви..." value="${dish ? escapeHTML(dish.name) : ''}">
+          <div class="meal-combo-display ${dish ? '' : 'empty'}" tabindex="0">${dish ? escapeHTML(dish.name) : 'Пошук страви...'}</div>
+          <input type="text" class="meal-combo-input" autocomplete="off" placeholder="Пошук страви..." value="${dish ? escapeHTML(dish.name) : ''}" hidden>
           <div class="meal-combo-dropdown" hidden></div>
         </div>
         <div class="meal-recipe ${dish && dish.recipe ? '' : 'empty'}">

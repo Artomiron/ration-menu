@@ -173,6 +173,31 @@ main {
   position: relative;
 }
 
+.meal-combo-display {
+  width: 100%;
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
+  box-sizing: border-box;
+}
+
+.meal-combo-display:hover,
+.meal-combo-display:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.meal-combo-display.empty {
+  color: var(--text-dim);
+}
+
 .meal-combo-input {
   width: 100%;
   background: var(--bg-card);
