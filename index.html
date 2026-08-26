@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Меню на тиждень</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#121212">
+
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Меню">
+
+<link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+<header class="topbar">
+  <h1>Меню на тиждень</h1>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="menu">Меню</button>
+    <button class="tab-btn" data-tab="dishes">Страви</button>
+  </nav>
+</header>
+
+<main>
+  <section id="tab-menu" class="tab-panel active">
+    <div class="week-controls">
+      <label for="week-picker">Тиждень:</label>
+      <input type="week" id="week-picker">
+      <span id="week-range" class="week-range"></span>
+      <button id="prev-week" title="Попередній тиждень">←</button>
+      <button id="next-week" title="Наступний тиждень">→</button>
+    </div>
+    <div id="days-container" class="days-container"></div>
+  </section>
+
+  <section id="tab-dishes" class="tab-panel">
+    <div class="dish-filter">
+      <input type="text" id="dish-search" placeholder="Пошук страви...">
+    </div>
+    <div id="categories-container" class="categories-container"></div>
+    <div class="dish-form-card">
+      <h2>Нова страва</h2>
+      <form id="dish-form">
+        <input type="text" id="dish-name" placeholder="Назва страви" required>
+        <select id="dish-category" required></select>
+        <textarea id="dish-recipe" placeholder="Рецепт приготування" rows="3"></textarea>
+        <div class="dish-nutrition-inputs">
+          <label>Ккал (опційно) <input type="text" id="dish-kcal" placeholder="напр. 350"></label>
+          <label>Білок, г (опційно) <input type="text" id="dish-protein" placeholder="напр. 30"></label>
+          <label>Залізо, мг (опційно) <input type="text" id="dish-iron" placeholder="напр. 5.5"></label>
+          <label>Оцінка, 1-10 (опційно) <input type="text" id="dish-rating" placeholder="напр. 8"></label>
+        </div>
+        <button type="submit">Додати страву</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<script src="app.js?v=4"></script>
+</body>
+</html>
