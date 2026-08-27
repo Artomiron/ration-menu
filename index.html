@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
 
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 <header class="topbar">
@@ -25,6 +25,7 @@
     <button class="tab-btn active" data-tab="menu">Меню</button>
     <button class="tab-btn" data-tab="dishes">Страви</button>
     <button class="tab-btn" data-tab="iron">Топ-100 заліза</button>
+    <button class="tab-btn" data-tab="tracker">Трекер заліза</button>
   </nav>
 </header>
 
@@ -78,8 +79,38 @@
     </div>
     <div id="iron-list" class="iron-list"></div>
   </section>
+
+  <section id="tab-tracker" class="tab-panel">
+    <div class="tracker-day-controls">
+      <div class="tracker-date-group">
+        <label for="tracker-date">День:</label>
+        <input type="date" id="tracker-date">
+        <button id="tracker-today-btn">Сьогодні</button>
+      </div>
+      <div class="tracker-nav-group">
+        <button id="tracker-prev-day" title="Попередній день">←</button>
+        <button id="tracker-next-day" title="Наступний день">→</button>
+      </div>
+    </div>
+
+    <div class="tracker-total">
+      <span class="tracker-total-label">Залізо за день</span>
+      <span id="tracker-total-value" class="tracker-total-value">0 мг</span>
+    </div>
+
+    <div class="iron-callout">
+      <p>Орієнтовна добова норма заліза: ~18 мг для жінок, ~8 мг для чоловіків (залежить від віку й стану здоров'я — не медична рекомендація).</p>
+    </div>
+
+    <div class="meal-combobox tracker-combobox">
+      <input type="text" id="tracker-search-input" class="meal-combo-input" autocomplete="off" placeholder="Пошук страви або продукту з топ-100...">
+      <div id="tracker-dropdown" class="meal-combo-dropdown" hidden></div>
+    </div>
+
+    <div id="tracker-log" class="tracker-log"></div>
+  </section>
 </main>
 
-<script src="app.js?v=11"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>

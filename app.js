@@ -842,6 +842,204 @@ ironCategoryFilter.addEventListener('change', (e) => {
   renderIronTop();
 });
 
+// ---------- Трекер заліза за день ----------
+
+const STORAGE_IRON_LOG = 'ration.ironLog.v1';
+
+function loadIronLog() {
+  const raw = localStorage.getItem(STORAGE_IRON_LOG);
+  return raw ? JSON.parse(raw) : {};
+}
+
+function saveIronLog(log) {
+  localStorage.setItem(STORAGE_IRON_LOG, JSON.stringify(log));
+}
+
+let ironLog = loadIronLog();
+let trackerDate = new Date();
+trackerDate.setHours(0, 0, 0, 0);
+
+const trackerDateInput = document.getElementById('tracker-date');
+const trackerTotalValue = document.getElementById('tracker-total-value');
+const trackerSearchInput = document.getElementById('tracker-search-input');
+const trackerDropdown = document.getElementById('tracker-dropdown');
+const trackerLogEl = document.getElementById('tracker-log');
+
+function formatMg(n) {
+  const rounded = Math.round(n * 10) / 10;
+  return (rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1)) + ' мг';
+}
+
+function trackerEntries() {
+  const key = toISODate(trackerDate);
+  if (!ironLog[key]) ironLog[key] = [];
+  return ironLog[key];
+}
+
+function trackerAdd(entry) {
+  entry.id = nextDishId();
+  trackerEntries().push(entry);
+  saveIronLog(ironLog);
+  renderTracker();
+}
+
+function trackerRemove(id) {
+  const key = toISODate(trackerDate);
+  ironLog[key] = (ironLog[key] || []).filter((e) => e.id !== id);
+  saveIronLog(ironLog);
+  renderTracker();
+}
+
+function trackerUpdateGrams(id, grams) {
+  const entry = trackerEntries().find((e) => e.id === id);
+  if (!entry) return;
+  const g = Math.max(0, Number(grams) || 0);
+  entry.grams = g;
+  entry.iron = Math.round(((entry.per100 * g) / 100) * 100) / 100;
+  saveIronLog(ironLog);
+  renderTracker();
+}
+
+function trackerOptionsHTML(term) {
+  const t = term.trim().toLowerCase();
+  let html = '';
+
+  const matchingDishes = dishes
+    .filter((d) => !t || d.name.toLowerCase().includes(t))
+    .sort((a, b) => a.name.localeCompare(b, 'uk'));
+  if (matchingDishes.length) {
+    html += '<div class="combo-group-label">Страви (порція)</div>';
+    matchingDishes.forEach((d) => {
+      const ironLabel = d.iron ? `🩸${escapeHTML(d.iron)}мг` : '🩸—';
+      html += `<div class="combo-option" data-type="dish" data-id="${d.id}"><span class="combo-rating">${ironLabel}</span><span class="combo-name">${escapeHTML(d.name)}</span></div>`;
+    });
+  }
+
+  const matchingTop100 = IRON_TOP100.filter((r) => !t || r.name.toLowerCase().includes(t)).sort((a, b) =>
+    a.name.localeCompare(b.name, 'uk')
+  );
+  if (matchingTop100.length) {
+    html += '<div class="combo-group-label">Продукти, на 100 г (топ-100)</div>';
+    matchingTop100.forEach((r) => {
+      html += `<div class="combo-option" data-type="top100" data-rank="${r.rank}"><span class="combo-rating">🩸${r.iron}мг</span><span class="combo-name">${escapeHTML(r.name)}</span></div>`;
+    });
+  }
+
+  if (!matchingDishes.length && !matchingTop100.length) {
+    html = '<div class="combo-empty">Нічого не знайдено</div>';
+  }
+
+  return html;
+}
+
+trackerSearchInput.addEventListener('focus', () => {
+  trackerDropdown.innerHTML = trackerOptionsHTML(trackerSearchInput.value);
+  trackerDropdown.hidden = false;
+});
+
+trackerSearchInput.addEventListener('input', () => {
+  trackerDropdown.innerHTML = trackerOptionsHTML(trackerSearchInput.value);
+  trackerDropdown.hidden = false;
+});
+
+trackerSearchInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') trackerSearchInput.blur();
+});
+
+trackerDropdown.addEventListener('mousedown', (e) => {
+  const opt = e.target.closest('.combo-option');
+  if (!opt) return;
+  e.preventDefault();
+  if (opt.dataset.type === 'dish') {
+    const dish = findDish(opt.dataset.id);
+    if (dish) {
+      trackerAdd({ type: 'dish', name: dish.name, iron: Number(dish.iron) || 0 });
+    }
+  } else if (opt.dataset.type === 'top100') {
+    const rank = Number(opt.dataset.rank);
+    const item = IRON_TOP100.find((r) => r.rank === rank);
+    if (item) {
+      trackerAdd({ type: 'top100', name: item.name, per100: item.iron, grams: 100, iron: item.iron });
+    }
+  }
+  trackerSearchInput.value = '';
+  trackerDropdown.hidden = true;
+});
+
+trackerSearchInput.addEventListener('blur', () => {
+  setTimeout(() => {
+    trackerDropdown.hidden = true;
+  }, 100);
+});
+
+function renderTracker() {
+  trackerDateInput.value = toISODate(trackerDate);
+
+  const entries = trackerEntries();
+  const total = entries.reduce((sum, e) => sum + (Number(e.iron) || 0), 0);
+  trackerTotalValue.textContent = formatMg(total);
+
+  trackerLogEl.innerHTML = '';
+  if (!entries.length) {
+    trackerLogEl.innerHTML = '<div class="empty-hint">Ще нічого не додано за цей день</div>';
+    return;
+  }
+
+  entries.forEach((entry) => {
+    const row = document.createElement('div');
+    row.className = 'tracker-row';
+    if (entry.type === 'top100') {
+      row.innerHTML = `
+        <div class="tracker-row-main">
+          <span class="tracker-name">${escapeHTML(entry.name)}</span>
+          <span class="tracker-grams-wrap">
+            <input type="number" class="tracker-grams-input" min="0" step="1" value="${entry.grams}"> г
+          </span>
+          <span class="tracker-iron">🩸 ${formatMg(entry.iron)}</span>
+          <button type="button" class="tracker-remove" title="Видалити">✕</button>
+        </div>
+      `;
+      row.querySelector('.tracker-grams-input').addEventListener('change', (e) => {
+        trackerUpdateGrams(entry.id, e.target.value);
+      });
+    } else {
+      row.innerHTML = `
+        <div class="tracker-row-main">
+          <span class="tracker-name">${escapeHTML(entry.name)}</span>
+          <span class="tracker-iron">🩸 ${formatMg(entry.iron)}</span>
+          <button type="button" class="tracker-remove" title="Видалити">✕</button>
+        </div>
+      `;
+    }
+    row.querySelector('.tracker-remove').addEventListener('click', () => trackerRemove(entry.id));
+    trackerLogEl.appendChild(row);
+  });
+}
+
+trackerDateInput.addEventListener('change', () => {
+  if (!trackerDateInput.value) return;
+  const [y, m, d] = trackerDateInput.value.split('-').map(Number);
+  trackerDate = new Date(y, m - 1, d);
+  trackerDate.setHours(0, 0, 0, 0);
+  renderTracker();
+});
+
+document.getElementById('tracker-prev-day').addEventListener('click', () => {
+  trackerDate.setDate(trackerDate.getDate() - 1);
+  renderTracker();
+});
+
+document.getElementById('tracker-next-day').addEventListener('click', () => {
+  trackerDate.setDate(trackerDate.getDate() + 1);
+  renderTracker();
+});
+
+document.getElementById('tracker-today-btn').addEventListener('click', () => {
+  trackerDate = new Date();
+  trackerDate.setHours(0, 0, 0, 0);
+  renderTracker();
+});
+
 // ---------- Таби ----------
 
 document.querySelectorAll('.tab-btn').forEach((btn) => {
@@ -858,6 +1056,7 @@ document.querySelectorAll('.tab-btn').forEach((btn) => {
 renderDays();
 renderDishes();
 renderIronTop();
+renderTracker();
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   window.addEventListener('load', () => {
