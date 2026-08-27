@@ -786,7 +786,80 @@ const IRON_TOP100 = [
   [98, 'Яйце куряче', 'Яйця', 'варене', 1.2],
   [99, 'Свинина (нежирна)', 'М\'ясо', 'варена', 1.2],
   [100, 'Оселедець', 'Риба', 'солоний/запечений', 1.1],
-].map(([rank, name, category, form, iron]) => ({ rank, name, category, form, iron }));
+].map(([rank, name, category, form, iron]) => ({ id: 'top100-' + rank, rank, name, category, form, iron }));
+
+// Побутові продукти й типові варіанти готових страв, яких немає в топ-100
+// (бо вони не рекордсмени за залізом), але їх треба знаходити в трекері:
+// овочі, фрукти, хліб/крупи, м'ясо/риба, молочні продукти + кілька варіантів
+// одного й того ж (плов з різним м'ясом, картопля в різних формах).
+const COMMON_PRODUCTS = [
+  ['Помідор свіжий', 'Овочі', 'сирий', 0.3],
+  ['Огірок свіжий', 'Овочі', 'сирий', 0.3],
+  ['Цибуля', 'Овочі', 'сира', 0.2],
+  ['Часник', 'Овочі', 'сирий', 1.7],
+  ['Морква', 'Овочі', 'сира', 0.3],
+  ['Капуста біла', 'Овочі', 'сира', 0.5],
+  ['Буряк сирий', 'Овочі', 'сирий', 0.8],
+  ['Буряк варений', 'Овочі', 'варений', 0.6],
+  ['Перець солодкий', 'Овочі', 'сирий', 0.4],
+  ['Кабачок', 'Овочі', 'сирий', 0.4],
+  ['Баклажан варений', 'Овочі', 'варений', 0.3],
+  ['Гарбуз варений', 'Овочі', 'варений', 0.5],
+  ['Редис', 'Овочі', 'сирий', 0.3],
+  ['Салат листовий', 'Овочі', 'сирий', 0.9],
+  ['Броколі сира', 'Овочі', 'сира', 0.7],
+  ['Цвітна капуста варена', 'Овочі', 'варена', 0.4],
+  ['Кукурудза варена', 'Овочі', 'варена', 0.5],
+  ['Картопля варена', 'Овочі', 'варена', 0.3],
+  ['Картопля смажена', 'Овочі', 'смажена', 0.7],
+  ['Картопля тушена', 'Овочі', 'тушена', 0.5],
+  ['Картопля печена (без шкірки)', 'Овочі', 'печена', 0.4],
+  ['Картопляне пюре', 'Овочі', 'пюре', 0.3],
+  ['Банан', 'Фрукти', 'сирий', 0.3],
+  ['Яблуко', 'Фрукти', 'сире', 0.1],
+  ['Апельсин', 'Фрукти', 'сирий', 0.1],
+  ['Груша', 'Фрукти', 'сира', 0.2],
+  ['Виноград', 'Фрукти', 'сирий', 0.4],
+  ['Ківі', 'Фрукти', 'сире', 0.3],
+  ['Полуниця', 'Фрукти', 'сира', 0.4],
+  ['Лимон', 'Фрукти', 'сирий', 0.6],
+  ['Авокадо', 'Фрукти', 'сире', 0.6],
+  ['Гранат (зерна)', 'Фрукти', 'сирий', 0.3],
+  ['Диня', 'Фрукти', 'сира', 0.2],
+  ['Арбуз', 'Фрукти', 'сирий', 0.2],
+  ['Хліб пшеничний', 'Зернові', 'готовий', 1.2],
+  ['Хліб житній', 'Зернові', 'готовий', 2.8],
+  ['Рис білий варений', 'Зернові', 'варений', 0.2],
+  ['Рис бурий варений', 'Зернові', 'варений', 0.5],
+  ['Гречка варена', 'Зернові', 'варена', 1.3],
+  ['Булгур варений', 'Зернові', 'варений', 1.0],
+  ['Овсяна каша варена', 'Зернові', 'варена', 0.9],
+  ['Макарони варені', 'Зернові', 'варені', 1.0],
+  ['Мамалига (кукурудзяна каша)', 'Зернові', 'варена', 0.5],
+  ['Плов з куркою', 'Готові страви', 'готовий', 1.3],
+  ['Плов зі свининою', 'Готові страви', 'готовий', 1.4],
+  ['Плов з бараниною', 'Готові страви', 'готовий', 1.9],
+  ['Плов з яловичиною', 'Готові страви', 'готовий', 2.0],
+  ['Куряче філе (грудка) варене', "М'ясо", 'варене', 0.7],
+  ['Куряче філе (грудка) смажене', "М'ясо", 'смажене', 0.8],
+  ['Курячі котлети домашні', "М'ясо", 'смажені', 1.0],
+  ['Яловичі котлети/біфштекс', "М'ясо", 'смажені', 2.5],
+  ['Свинина смажена', "М'ясо", 'смажена', 1.1],
+  ['Індичка (філе) смажена', "М'ясо", 'смажена', 0.9],
+  ['Тріска/хек варена', 'Риба', 'варена', 0.4],
+  ['Лосось смажений/запечений', 'Риба', 'смажений', 0.5],
+  ['Яйце смажене (яєчня)', 'Яйця', 'смажене', 1.3],
+  ['Молоко', 'Молочні продукти', 'рідке', 0.05],
+  ['Кефір', 'Молочні продукти', 'рідкий', 0.1],
+  ['Йогурт натуральний', 'Молочні продукти', 'готовий', 0.1],
+  ['Сир твердий (гауда/чедер)', 'Молочні продукти', 'готовий', 0.5],
+  ['Творог (сир кисломолочний)', 'Молочні продукти', 'готовий', 0.2],
+  ['Сметана', 'Молочні продукти', 'готова', 0.1],
+].map(([name, category, form, iron], i) => ({ id: 'common-' + i, name, category, form, iron }));
+
+// Спільний пул для пошуку/розпізнавання в трекері (топ-100 + побутові продукти).
+// Вкладка "Топ-100 заліза" й далі показує лише IRON_TOP100 — без змін.
+const PRODUCT_LIBRARY = IRON_TOP100.concat(COMMON_PRODUCTS);
 
 const ironSearch = document.getElementById('iron-search');
 const ironCategoryFilter = document.getElementById('iron-category-filter');
@@ -915,17 +988,17 @@ function trackerOptionsHTML(term) {
     });
   }
 
-  const matchingTop100 = IRON_TOP100.filter((r) => !t || r.name.toLowerCase().includes(t)).sort((a, b) =>
+  const matchingProducts = PRODUCT_LIBRARY.filter((r) => !t || r.name.toLowerCase().includes(t)).sort((a, b) =>
     a.name.localeCompare(b.name, 'uk')
   );
-  if (matchingTop100.length) {
-    html += '<div class="combo-group-label">Продукти, на 100 г (топ-100)</div>';
-    matchingTop100.forEach((r) => {
-      html += `<div class="combo-option" data-type="top100" data-rank="${r.rank}"><span class="combo-rating">🩸${r.iron}мг</span><span class="combo-name">${escapeHTML(r.name)}</span></div>`;
+  if (matchingProducts.length) {
+    html += '<div class="combo-group-label">Продукти, на 100 г</div>';
+    matchingProducts.forEach((r) => {
+      html += `<div class="combo-option" data-type="product" data-id="${r.id}"><span class="combo-rating">🩸${r.iron}мг</span><span class="combo-name">${escapeHTML(r.name)}</span></div>`;
     });
   }
 
-  if (!matchingDishes.length && !matchingTop100.length) {
+  if (!matchingDishes.length && !matchingProducts.length) {
     html = '<div class="combo-empty">Нічого не знайдено</div>';
   }
 
@@ -955,9 +1028,8 @@ trackerDropdown.addEventListener('mousedown', (e) => {
     if (dish) {
       trackerAdd({ type: 'dish', name: dish.name, iron: Number(dish.iron) || 0 });
     }
-  } else if (opt.dataset.type === 'top100') {
-    const rank = Number(opt.dataset.rank);
-    const item = IRON_TOP100.find((r) => r.rank === rank);
+  } else if (opt.dataset.type === 'product') {
+    const item = PRODUCT_LIBRARY.find((r) => r.id === opt.dataset.id);
     if (item) {
       trackerAdd({ type: 'top100', name: item.name, per100: item.iron, grams: 100, iron: item.iron });
     }
@@ -970,6 +1042,326 @@ trackerSearchInput.addEventListener('blur', () => {
   setTimeout(() => {
     trackerDropdown.hidden = true;
   }, 100);
+});
+
+// ---------- Швидке додавання довільним текстом ----------
+
+const UA_NUMBER_WORDS = {
+  'одна': 1, 'один': 1, 'одне': 1, 'одного': 1,
+  'два': 2, 'дві': 2, 'двоє': 2,
+  'три': 3, 'трьох': 3, 'троє': 3,
+  'чотири': 4, 'четверо': 4,
+  "п'ять": 5, 'п’ять': 5, 'пять': 5, "п'ятеро": 5,
+  'шість': 6, 'шестеро': 6,
+  'сім': 7, 'семеро': 7,
+  'вісім': 8, 'восьмеро': 8,
+  "дев'ять": 9, 'дев’ять': 9, "дев'ятеро": 9,
+  'десять': 10, 'десятеро': 10,
+};
+
+// Орієнтовна вага "штуки" для типових лічильних продуктів, коли грами не вказані
+const DEFAULT_UNIT_GRAMS = [
+  { test: /яйц/iu, grams: 50 },
+];
+
+function guessUnitGrams(name) {
+  const rule = DEFAULT_UNIT_GRAMS.find((r) => r.test.test(name));
+  return rule ? rule.grams : 100;
+}
+
+function splitQuickAddText(raw) {
+  return raw
+    .split(/,|;|\n|\+|(?:\s+і\s+)|(?:\s+та\s+)/iu)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function parseQuickAddLine(raw) {
+  let text = raw.trim();
+  let grams = null;
+  let count = 1;
+
+  let m = text.match(/^(\d+(?:[.,]\d+)?)\s*(г|грам\w*|мл)\b\.?\s*/iu);
+  if (m) {
+    grams = parseFloat(m[1].replace(',', '.'));
+    text = text.slice(m[0].length).trim();
+  } else {
+    m = text.match(/^(\d+(?:[.,]\d+)?)\s*(?:х|x)?\s+/iu);
+    if (m) {
+      count = parseFloat(m[1].replace(',', '.'));
+      text = text.slice(m[0].length).trim();
+    } else {
+      const words = text.split(/\s+/);
+      const first = (words[0] || '').toLowerCase().replace(/[^\wа-яіїєґ']/giu, '');
+      if (UA_NUMBER_WORDS[first] !== undefined) {
+        count = UA_NUMBER_WORDS[first];
+        text = words.slice(1).join(' ').trim();
+      }
+    }
+  }
+
+  return { rawText: raw.trim(), description: text, grams, count };
+}
+
+function normalizeWords(s) {
+  return s
+    .toLowerCase()
+    .replace(/['’ʼ]/g, '')
+    .replace(/[^a-zа-яіїєґ0-9\s]/giu, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length >= 3);
+}
+
+function stem3(word) {
+  return word.length > 3 ? word.slice(0, 3) : word;
+}
+
+// Скільки різних назв (страв+топ-100) містять цей корінь слова — щоб оцінити
+// його "унікальність". Загальні слова типу "варений"/"смажений" зустрічаються
+// в десятках назв і майже не несуть інформації; "яйце"/"яловичина" — рідкісні
+// й дуже показові. Рахуємо свіжо при кожному розпізнаванні (список маленький).
+function buildStemDocFrequency() {
+  const df = new Map();
+  const allNames = dishes.map((d) => d.name).concat(PRODUCT_LIBRARY.map((r) => r.name));
+  allNames.forEach((name) => {
+    const stems = new Set(normalizeWords(name).map(stem3));
+    stems.forEach((s) => df.set(s, (df.get(s) || 0) + 1));
+  });
+  return df;
+}
+
+function plainCoverage(queryWords, candidateWords) {
+  if (!queryWords.length) return 0;
+  const cs = new Set(candidateWords.map(stem3));
+  let hits = 0;
+  queryWords.forEach((w) => {
+    if (cs.has(stem3(w))) hits++;
+  });
+  return hits / queryWords.length;
+}
+
+function weightedCoverage(queryWords, candidateWords, stemDF) {
+  if (!queryWords.length) return 0;
+  const cs = new Set(candidateWords.map(stem3));
+  let hit = 0;
+  let total = 0;
+  queryWords.forEach((w) => {
+    const s = stem3(w);
+    const weight = 1 / (stemDF.get(s) || 1);
+    total += weight;
+    if (cs.has(s)) hit += weight;
+  });
+  return total ? hit / total : 0;
+}
+
+function findBestFoodMatch(description, stemDF) {
+  const qWords = normalizeWords(description);
+  if (!qWords.length) return null;
+
+  // Проста (незважена) частка слів вирішує, чи кандидат ВЗАГАЛІ підходить —
+  // це стійкий, передбачуваний бар'єр. IDF-зважування використовуємо лише
+  // щоб обрати найкращого серед тих, хто вже пройшов бар'єр: воно допомагає
+  // віддати перевагу специфічному слову ("яйце") над загальним ("варений"),
+  // але не повинно саме по собі відкидати кандидата через випадкову
+  // рідкість якогось із слів запиту.
+
+  // Топ-100 — це чисті одноінгредієнтні продукти, тож перевіряємо їх першими:
+  // короткий запит типу "яйця" чи "яловичина" повинен матчитись на сам
+  // інгредієнт, а не випадково на страву, де він лише один з компонентів.
+  let bestTop = null;
+  let bestTopWeighted = -1;
+  PRODUCT_LIBRARY.forEach((r) => {
+    const cWords = normalizeWords(r.name);
+    if (plainCoverage(qWords, cWords) < 0.5) return;
+    const weighted = weightedCoverage(qWords, cWords, stemDF);
+    if (weighted > bestTopWeighted) {
+      bestTopWeighted = weighted;
+      bestTop = r;
+    }
+  });
+  if (bestTop) {
+    return { type: 'top100', id: bestTop.id, name: bestTop.name, per100: bestTop.iron };
+  }
+
+  // Страви — вимагаємо збіг з обох боків (і запит переважно покритий стравою,
+  // і страва переважно покрита запитом), інакше одне випадкове слово-інгредієнт
+  // ("помідор") хапає на себе залізо всієї багатокомпонентної страви.
+  let bestDish = null;
+  let bestDishWeighted = -1;
+  dishes.forEach((d) => {
+    const cWords = normalizeWords(d.name);
+    if (plainCoverage(qWords, cWords) < 0.5 || plainCoverage(cWords, qWords) < 0.4) return;
+    const weighted = weightedCoverage(qWords, cWords, stemDF) * weightedCoverage(cWords, qWords, stemDF);
+    if (weighted > bestDishWeighted) {
+      bestDishWeighted = weighted;
+      bestDish = d;
+    }
+  });
+  if (bestDish) {
+    return { type: 'dish', id: bestDish.id, name: bestDish.name, iron: Number(bestDish.iron) || 0 };
+  }
+
+  return null;
+}
+
+let quickPreviewItems = [];
+
+function buildQuickPreview(rawText) {
+  const stemDF = buildStemDocFrequency();
+  return splitQuickAddText(rawText).map((frag) => {
+    const parsed = parseQuickAddLine(frag);
+    const match = findBestFoodMatch(parsed.description || parsed.rawText, stemDF);
+    const item = {
+      key: 'p-' + Math.random().toString(36).slice(2),
+      rawText: parsed.rawText,
+      description: parsed.description,
+      count: parsed.count,
+      match,
+      grams: null,
+      iron: 0,
+    };
+    recomputeQuickItem(item, parsed.grams);
+    return item;
+  });
+}
+
+function recomputeQuickItem(item, explicitGrams) {
+  if (!item.match) {
+    item.iron = 0;
+    return;
+  }
+  if (item.match.type === 'dish') {
+    item.iron = Math.round(item.match.iron * item.count * 100) / 100;
+  } else {
+    const grams = explicitGrams != null ? explicitGrams : (item.grams != null ? item.grams : guessUnitGrams(item.match.name) * item.count);
+    item.grams = grams;
+    item.iron = Math.round(((item.match.per100 * grams) / 100) * 100) / 100;
+  }
+}
+
+function renderQuickPreview() {
+  const box = document.getElementById('tracker-quick-preview');
+  if (!quickPreviewItems.length) {
+    box.hidden = true;
+    box.innerHTML = '';
+    return;
+  }
+  box.hidden = false;
+
+  const rows = quickPreviewItems
+    .map((item) => {
+      if (!item.match) {
+        return `
+          <div class="quick-preview-row quick-preview-row-unmatched" data-key="${item.key}">
+            <span class="quick-preview-raw">«${escapeHTML(item.rawText)}» — не розпізнано</span>
+            <button type="button" class="quick-preview-manual" data-key="${item.key}">Шукати вручну</button>
+            <button type="button" class="quick-preview-remove" data-key="${item.key}">✕</button>
+          </div>
+        `;
+      }
+      const badge = item.match.type === 'dish' ? 'страва' : 'продукт';
+      const qtyControl =
+        item.match.type === 'top100'
+          ? `<input type="number" class="quick-preview-grams" data-key="${item.key}" min="0" step="1" value="${item.grams}"> г`
+          : `×<input type="number" class="quick-preview-count" data-key="${item.key}" min="1" step="1" value="${item.count}">`;
+      return `
+        <div class="quick-preview-row" data-key="${item.key}">
+          <span class="quick-preview-name">${escapeHTML(item.match.name)} <span class="quick-preview-badge">${badge}</span></span>
+          <span class="quick-preview-qty">${qtyControl}</span>
+          <span class="quick-preview-iron">🩸 ${formatMg(item.iron)}</span>
+          <button type="button" class="quick-preview-remove" data-key="${item.key}">✕</button>
+        </div>
+      `;
+    })
+    .join('');
+
+  box.innerHTML = `
+    ${rows}
+    <div class="quick-preview-actions">
+      <button type="button" id="tracker-quick-add-all">Додати все в журнал</button>
+      <button type="button" id="tracker-quick-cancel">Скасувати</button>
+    </div>
+  `;
+
+  box.querySelectorAll('.quick-preview-remove').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      quickPreviewItems = quickPreviewItems.filter((it) => it.key !== btn.dataset.key);
+      renderQuickPreview();
+    });
+  });
+
+  box.querySelectorAll('.quick-preview-grams').forEach((input) => {
+    input.addEventListener('change', (e) => {
+      const item = quickPreviewItems.find((it) => it.key === e.target.dataset.key);
+      if (!item) return;
+      recomputeQuickItem(item, Math.max(0, Number(e.target.value) || 0));
+      renderQuickPreview();
+    });
+  });
+
+  box.querySelectorAll('.quick-preview-count').forEach((input) => {
+    input.addEventListener('change', (e) => {
+      const item = quickPreviewItems.find((it) => it.key === e.target.dataset.key);
+      if (!item) return;
+      item.count = Math.max(1, Number(e.target.value) || 1);
+      recomputeQuickItem(item, null);
+      renderQuickPreview();
+    });
+  });
+
+  box.querySelectorAll('.quick-preview-manual').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = quickPreviewItems.find((it) => it.key === btn.dataset.key);
+      quickPreviewItems = quickPreviewItems.filter((it) => it.key !== btn.dataset.key);
+      renderQuickPreview();
+      trackerSearchInput.value = item ? item.description || item.rawText : '';
+      trackerSearchInput.focus();
+      trackerDropdown.innerHTML = trackerOptionsHTML(trackerSearchInput.value);
+      trackerDropdown.hidden = false;
+    });
+  });
+
+  const addAllBtn = document.getElementById('tracker-quick-add-all');
+  if (addAllBtn) {
+    addAllBtn.addEventListener('click', () => {
+      quickPreviewItems
+        .filter((item) => item.match)
+        .forEach((item) => {
+          const label = item.count > 1 && item.match.type === 'dish' ? `${item.count}× ${item.match.name}` : item.match.name;
+          if (item.match.type === 'dish') {
+            trackerEntries().push({ id: nextDishId(), type: 'dish', name: label, iron: item.iron });
+          } else {
+            trackerEntries().push({
+              id: nextDishId(),
+              type: 'top100',
+              name: item.match.name,
+              per100: item.match.per100,
+              grams: item.grams,
+              iron: item.iron,
+            });
+          }
+        });
+      saveIronLog(ironLog);
+      quickPreviewItems = [];
+      document.getElementById('tracker-quick-text').value = '';
+      renderQuickPreview();
+      renderTracker();
+    });
+  }
+
+  const cancelBtn = document.getElementById('tracker-quick-cancel');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      quickPreviewItems = [];
+      renderQuickPreview();
+    });
+  }
+}
+
+document.getElementById('tracker-quick-parse-btn').addEventListener('click', () => {
+  const text = document.getElementById('tracker-quick-text').value;
+  quickPreviewItems = buildQuickPreview(text);
+  renderQuickPreview();
 });
 
 function renderTracker() {

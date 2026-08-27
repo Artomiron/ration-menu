@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
 
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 <header class="topbar">
@@ -102,7 +102,15 @@
       <p>Орієнтовна добова норма заліза: ~18 мг для жінок, ~8 мг для чоловіків (залежить від віку й стану здоров'я — не медична рекомендація).</p>
     </div>
 
+    <div class="tracker-quick-add">
+      <label for="tracker-quick-text">Швидке додавання (довільний текст, через кому/«і»/«та»)</label>
+      <textarea id="tracker-quick-text" rows="2" placeholder="напр. два варені яйця, помідор і дві курячі котлети"></textarea>
+      <button type="button" id="tracker-quick-parse-btn">Розпізнати</button>
+    </div>
+    <div id="tracker-quick-preview" class="tracker-quick-preview" hidden></div>
+
     <div class="meal-combobox tracker-combobox">
+      <label class="tracker-combobox-label">Або обрати точно зі списку:</label>
       <input type="text" id="tracker-search-input" class="meal-combo-input" autocomplete="off" placeholder="Пошук страви або продукту з топ-100...">
       <div id="tracker-dropdown" class="meal-combo-dropdown" hidden></div>
     </div>
@@ -111,6 +119,6 @@
   </section>
 </main>
 
-<script src="app.js?v=12"></script>
+<script src="app.js?v=14"></script>
 </body>
 </html>
