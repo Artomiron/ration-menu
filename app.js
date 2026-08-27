@@ -1,5 +1,7 @@
 // ---------- Дані та збереження ----------
 
+const APP_VERSION = 'v15';
+
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
 
@@ -1449,6 +1451,9 @@ renderDays();
 renderDishes();
 renderIronTop();
 renderTracker();
+
+const appVersionEl = document.getElementById('app-version');
+if (appVersionEl) appVersionEl.textContent = APP_VERSION;
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   window.addEventListener('load', () => {
