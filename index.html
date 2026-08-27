@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
 
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 <header class="topbar">
@@ -115,12 +115,21 @@
       <div id="tracker-dropdown" class="meal-combo-dropdown" hidden></div>
     </div>
 
+    <div class="tracker-manual-add">
+      <label class="tracker-combobox-label">Або додати страву вручну зі своїм значенням заліза:</label>
+      <div class="tracker-manual-add-row">
+        <input type="text" id="tracker-manual-name" placeholder="Назва страви">
+        <input type="number" id="tracker-manual-iron" placeholder="мг заліза" min="0" step="0.1">
+        <button type="button" id="tracker-manual-add-btn">Додати</button>
+      </div>
+    </div>
+
     <div id="tracker-log" class="tracker-log"></div>
   </section>
 </main>
 
 <div id="app-version" class="app-version"></div>
 
-<script src="app.js?v=15"></script>
+<script src="app.js?v=16"></script>
 </body>
 </html>

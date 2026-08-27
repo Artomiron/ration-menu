@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v15';
+const APP_VERSION = 'v16';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -857,6 +857,16 @@ const COMMON_PRODUCTS = [
   ['Сир твердий (гауда/чедер)', 'Молочні продукти', 'готовий', 0.5],
   ['Творог (сир кисломолочний)', 'Молочні продукти', 'готовий', 0.2],
   ['Сметана', 'Молочні продукти', 'готова', 0.1],
+  ['Борщ (з м\'ясом)', 'Супи', 'готовий', 1.0],
+  ['Борщ вегетаріанський', 'Супи', 'готовий', 0.6],
+  ['Суп овочевий', 'Супи', 'готовий', 0.5],
+  ['Суп гороховий', 'Супи', 'готовий', 1.2],
+  ['Солянка (з м\'ясом і ковбасою)', 'Супи', 'готова', 1.5],
+  ['Розсольник', 'Супи', 'готовий', 1.0],
+  ['Суп-пюре з броколі', 'Супи', 'готовий', 0.5],
+  ['Курячий суп з овочами', 'Супи', 'готовий', 0.6],
+  ['Грибний суп', 'Супи', 'готовий', 0.6],
+  ['Харчо', 'Супи', 'готовий', 1.2],
 ].map(([name, category, form, iron], i) => ({ id: 'common-' + i, name, category, form, iron }));
 
 // Спільний пул для пошуку/розпізнавання в трекері (топ-100 + побутові продукти).
@@ -1432,6 +1442,18 @@ document.getElementById('tracker-today-btn').addEventListener('click', () => {
   trackerDate = new Date();
   trackerDate.setHours(0, 0, 0, 0);
   renderTracker();
+});
+
+document.getElementById('tracker-manual-add-btn').addEventListener('click', () => {
+  const nameInput = document.getElementById('tracker-manual-name');
+  const ironInput = document.getElementById('tracker-manual-iron');
+  const name = nameInput.value.trim();
+  const iron = Number(ironInput.value);
+  if (!name || !Number.isFinite(iron) || iron < 0) return;
+  trackerAdd({ type: 'manual', name, iron: Math.round(iron * 100) / 100 });
+  nameInput.value = '';
+  ironInput.value = '';
+  nameInput.focus();
 });
 
 // ---------- Таби ----------
