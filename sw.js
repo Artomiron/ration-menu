@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ration-cache-v13';
+const CACHE_NAME = 'ration-cache-v14';
 const APP_SHELL = [
   './',
   './index.html',
