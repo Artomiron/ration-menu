@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v19';
+const APP_VERSION = 'v20';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -131,7 +131,8 @@ function saveWeeks(weeks) {
 let dishes = loadDishes();
 let weeks = loadWeeks();
 
-// Готовий план на перші два тижні — застосовується лише якщо тиждень ще порожній
+// Початковий план на перші два тижні — більше не підставляється автоматично
+// в календар, лишається тільки для перегляду на окремій сторінці "📖 План".
 const DEFAULT_WEEK_PLAN = {
   '2026-08-24': [
     ['Гречка + яловичина тушкована з перцем', 'Лосось запечений + броколі й лимон', 'Варені яйця + свіжий перець/огірок'],
@@ -152,30 +153,6 @@ const DEFAULT_WEEK_PLAN = {
     ['Кускус + індичка + перець', 'Курка гриль + шпинат і апельсин', 'Тост з консервованим лососем + лимон'],
   ],
 };
-
-function seedDefaultWeeks() {
-  const nameToId = {};
-  dishes.forEach((d) => {
-    nameToId[d.name] = d.id;
-  });
-  const isAlreadyConfigured = (weekKey) =>
-    weeks[weekKey] && weeks[weekKey].days.some((day) => day.meals.some((m) => m !== null));
-
-  let changed = false;
-  Object.entries(DEFAULT_WEEK_PLAN).forEach(([weekKey, days]) => {
-    if (isAlreadyConfigured(weekKey)) return;
-    weeks[weekKey] = {
-      days: days.map((meals) => ({
-        mealsCount: meals.length,
-        meals: meals.map((name) => nameToId[name] || null),
-      })),
-    };
-    changed = true;
-  });
-  if (changed) saveWeeks(weeks);
-}
-
-seedDefaultWeeks();
 
 function nextDishId() {
   return 'd-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
@@ -271,6 +248,34 @@ function formatRange(monday) {
   sunday.setDate(monday.getDate() + 6);
   const fmt = (d) => `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()}`;
   return `${fmt(monday)} — ${fmt(sunday)}`;
+}
+
+function renderMenuPreset() {
+  const container = document.getElementById('menu-preset-content');
+  let html = '';
+  Object.keys(DEFAULT_WEEK_PLAN).forEach((weekKey, weekIdx) => {
+    const [y, m, d] = weekKey.split('-').map(Number);
+    const monday = new Date(y, m - 1, d);
+    html += `<h3 class="preset-week-title">Тиждень ${weekIdx + 1} (${formatRange(monday)})</h3>`;
+    DEFAULT_WEEK_PLAN[weekKey].forEach((meals, dayIdx) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + dayIdx);
+      html += `
+        <div class="preset-day">
+          <div class="preset-day-title">${DAY_NAMES[dayIdx]} <span class="preset-day-date">${pad2(date.getDate())}.${pad2(date.getMonth() + 1)}</span></div>
+          <div class="preset-meals">
+            ${meals
+              .map(
+                (name, mi) =>
+                  `<div class="preset-meal"><span class="preset-meal-label">Прийом ${mi + 1}</span><span class="preset-meal-name">${escapeHTML(name)}</span></div>`
+              )
+              .join('')}
+          </div>
+        </div>
+      `;
+    });
+  });
+  container.innerHTML = html;
 }
 
 function ratingBadge(dish) {
@@ -682,6 +687,7 @@ dishForm.addEventListener('submit', (e) => {
 
   renderDishes();
   renderDays();
+  closeAppModal('dish-form-modal');
 });
 
 // ---------- Топ-100 продуктів за вмістом заліза ----------
@@ -1471,6 +1477,33 @@ document.querySelectorAll('.tab-btn').forEach((btn) => {
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
+});
+
+// ---------- Повноекранні сторінки (модалки) ----------
+
+function openAppModal(id) {
+  document.getElementById(id).hidden = false;
+}
+
+function closeAppModal(id) {
+  document.getElementById(id).hidden = true;
+}
+
+document.getElementById('menu-preset-btn').addEventListener('click', () => {
+  renderMenuPreset();
+  openAppModal('menu-preset-modal');
+});
+
+document.getElementById('open-add-dish-btn').addEventListener('click', () => {
+  openAppModal('dish-form-modal');
+});
+
+document.getElementById('open-iron-top-btn').addEventListener('click', () => {
+  openAppModal('iron-modal');
+});
+
+document.querySelectorAll('[data-close-modal]').forEach((btn) => {
+  btn.addEventListener('click', () => closeAppModal(btn.dataset.closeModal));
 });
 
 // ---------- Ініціалізація ----------
