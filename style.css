@@ -90,12 +90,6 @@ main {
   margin: 0 auto;
 }
 
-.tab-header-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 12px;
-}
-
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
@@ -136,6 +130,10 @@ main {
 
 .week-controls button:hover { background: var(--bg-card-hover); }
 
+.week-controls #menu-preset-btn {
+  margin-left: auto;
+}
+
 .week-range {
   color: var(--text-dim);
   font-size: 0.9rem;
@@ -154,6 +152,11 @@ main {
 
   .week-nav-group {
     justify-content: space-between;
+  }
+
+  .week-controls #menu-preset-btn {
+    width: 100%;
+    margin-left: 0;
   }
 }
 
