@@ -276,6 +276,13 @@ main {
   border-color: var(--accent);
 }
 
+.meal-combo-input:disabled {
+  color: var(--accent);
+  font-weight: 600;
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
 .meal-combo-dropdown {
   position: absolute;
   top: 100%;
@@ -1071,9 +1078,22 @@ main {
   margin-bottom: 6px;
 }
 
-.tracker-manual-add {
-  margin-top: 14px;
+.tracker-manual-add-trigger {
+  display: block;
+  width: 100%;
   margin-bottom: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.tracker-manual-add-trigger:hover {
+  background: var(--bg-card-hover);
 }
 
 .tracker-manual-add-row {

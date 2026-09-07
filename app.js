@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.2';
+const APP_VERSION = 'v1.3';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -1047,19 +1047,36 @@ trackerDropdown.addEventListener('mousedown', (e) => {
   const opt = e.target.closest('.combo-option');
   if (!opt) return;
   e.preventDefault();
+  let added = false;
   if (opt.dataset.type === 'dish') {
     const dish = findDish(opt.dataset.id);
     if (dish) {
       trackerAdd({ type: 'dish', name: dish.name, iron: Number(dish.iron) || 0 });
+      added = true;
     }
   } else if (opt.dataset.type === 'product') {
     const item = PRODUCT_LIBRARY.find((r) => r.id === opt.dataset.id);
     if (item) {
       trackerAdd({ type: 'top100', name: item.name, per100: item.iron, grams: 100, iron: item.iron });
+      added = true;
     }
   }
-  trackerSearchInput.value = '';
   trackerDropdown.hidden = true;
+
+  if (added) {
+    // Поле явно втрачає фокус і на мить блокується з написом "Додано" —
+    // інакше mousedown+preventDefault лишає його "активним" без реального
+    // focus/blur, тож наступний тап не перевідкриває список.
+    trackerSearchInput.value = 'Додано ✓';
+    trackerSearchInput.disabled = true;
+    trackerSearchInput.blur();
+    setTimeout(() => {
+      trackerSearchInput.disabled = false;
+      trackerSearchInput.value = '';
+    }, 700);
+  } else {
+    trackerSearchInput.value = '';
+  }
 });
 
 trackerSearchInput.addEventListener('blur', () => {
@@ -1450,10 +1467,9 @@ document.getElementById('tracker-next-day').addEventListener('click', () => {
   renderTracker();
 });
 
-document.getElementById('tracker-today-btn').addEventListener('click', () => {
-  trackerDate = new Date();
-  trackerDate.setHours(0, 0, 0, 0);
-  renderTracker();
+document.getElementById('open-manual-add-btn').addEventListener('click', () => {
+  openAppModal('manual-add-modal');
+  document.getElementById('tracker-manual-name').focus();
 });
 
 document.getElementById('tracker-manual-add-btn').addEventListener('click', () => {
@@ -1465,7 +1481,7 @@ document.getElementById('tracker-manual-add-btn').addEventListener('click', () =
   trackerAdd({ type: 'manual', name, iron: Math.round(iron * 100) / 100 });
   nameInput.value = '';
   ironInput.value = '';
-  nameInput.focus();
+  closeAppModal('manual-add-modal');
 });
 
 // ---------- Таби ----------
