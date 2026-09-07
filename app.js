@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v20';
+const APP_VERSION = 'v21';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -1504,6 +1504,122 @@ document.getElementById('open-iron-top-btn').addEventListener('click', () => {
 
 document.querySelectorAll('[data-close-modal]').forEach((btn) => {
   btn.addEventListener('click', () => closeAppModal(btn.dataset.closeModal));
+});
+
+// ---------- Графік заліза за період ----------
+
+const DAY_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
+const MONTH_NAMES = [
+  'січня', 'лютого', 'березня', 'квітня', 'травня', 'червня',
+  'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня',
+];
+
+let chartPeriodType = 'week';
+let chartPeriodDate = new Date();
+chartPeriodDate.setHours(0, 0, 0, 0);
+
+function computeDayTotal(dateKey) {
+  const entries = ironLog[dateKey] || [];
+  return entries.reduce((sum, e) => sum + (Number(e.iron) || 0), 0);
+}
+
+function buildChartSVG(days, values, periodType) {
+  const isWeek = periodType === 'week';
+  const barWidth = isWeek ? 34 : 14;
+  const barGap = isWeek ? 14 : 6;
+  const chartHeight = 200;
+  const paddingTop = 10;
+  const paddingBottom = 28;
+  const plotHeight = chartHeight - paddingTop - paddingBottom;
+  const maxValue = Math.max(...values, 1) * 1.15;
+  const totalWidth = days.length * (barWidth + barGap) + barGap;
+  const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+  const avgY = paddingTop + plotHeight - (avg / maxValue) * plotHeight;
+
+  const bars = days
+    .map((d, i) => {
+      const value = values[i];
+      const x = barGap + i * (barWidth + barGap);
+      const barHeight = Math.max((value / maxValue) * plotHeight, 0);
+      const y = paddingTop + plotHeight - barHeight;
+      const label = isWeek ? DAY_SHORT[i] : String(d.getDate());
+      const dateLabel = `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}`;
+      return `
+        <g>
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="3" class="chart-bar"><title>${dateLabel}: ${value.toFixed(1)} мг</title></rect>
+          <text x="${x + barWidth / 2}" y="${chartHeight - 10}" class="chart-x-label" text-anchor="middle">${label}</text>
+        </g>
+      `;
+    })
+    .join('');
+
+  return `
+    <svg viewBox="0 0 ${totalWidth} ${chartHeight}" width="${totalWidth}" height="${chartHeight}" class="chart-svg">
+      <line x1="0" y1="${avgY}" x2="${totalWidth}" y2="${avgY}" class="chart-avg-line"><title>Середнє: ${avg.toFixed(1)} мг</title></line>
+      ${bars}
+    </svg>
+  `;
+}
+
+function renderChart() {
+  let days;
+  let label;
+  if (chartPeriodType === 'week') {
+    const monday = mondayOfWeekInput(isoWeekValueForDate(chartPeriodDate));
+    days = getWeekDays(monday);
+    label = formatRange(monday);
+  } else {
+    const y = chartPeriodDate.getFullYear();
+    const m = chartPeriodDate.getMonth();
+    const lastDay = new Date(y, m + 1, 0).getDate();
+    days = Array.from({ length: lastDay }, (_, i) => new Date(y, m, i + 1));
+    label = `${MONTH_NAMES[m]} ${y}`;
+  }
+  const values = days.map((d) => computeDayTotal(toISODate(d)));
+  const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+
+  document.getElementById('chart-period-label').textContent = label;
+  document.getElementById('chart-average-value').textContent = formatMg(avg);
+  document.getElementById('chart-scroll-wrap').innerHTML = buildChartSVG(days, values, chartPeriodType);
+}
+
+document.querySelectorAll('.chart-period-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chart-period-btn').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    chartPeriodType = btn.dataset.period;
+    renderChart();
+  });
+});
+
+document.getElementById('chart-prev-btn').addEventListener('click', () => {
+  if (chartPeriodType === 'week') {
+    chartPeriodDate.setDate(chartPeriodDate.getDate() - 7);
+  } else {
+    chartPeriodDate.setDate(1);
+    chartPeriodDate.setMonth(chartPeriodDate.getMonth() - 1);
+  }
+  renderChart();
+});
+
+document.getElementById('chart-next-btn').addEventListener('click', () => {
+  if (chartPeriodType === 'week') {
+    chartPeriodDate.setDate(chartPeriodDate.getDate() + 7);
+  } else {
+    chartPeriodDate.setDate(1);
+    chartPeriodDate.setMonth(chartPeriodDate.getMonth() + 1);
+  }
+  renderChart();
+});
+
+document.getElementById('open-chart-btn').addEventListener('click', () => {
+  chartPeriodType = 'week';
+  chartPeriodDate = new Date();
+  chartPeriodDate.setHours(0, 0, 0, 0);
+  document.querySelectorAll('.chart-period-btn').forEach((b) => b.classList.remove('active'));
+  document.querySelector('.chart-period-btn[data-period="week"]').classList.add('active');
+  renderChart();
+  openAppModal('chart-modal');
 });
 
 // ---------- Ініціалізація ----------

@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
 
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
 <header class="topbar">
@@ -62,6 +62,7 @@
       <div class="tracker-nav-group">
         <button id="tracker-prev-day" title="Попередній день">←</button>
         <button id="tracker-next-day" title="Наступний день">→</button>
+        <button type="button" id="open-chart-btn" class="icon-btn icon-btn-text" title="Графік заліза по днях">📊 Графік</button>
       </div>
     </div>
 
@@ -153,6 +154,31 @@
   <div id="iron-list" class="iron-list"></div>
 </section>
 
-<script src="app.js?v=20"></script>
+<section id="chart-modal" class="app-modal" hidden>
+  <div class="app-modal-header">
+    <button type="button" class="app-modal-back" data-close-modal="chart-modal">← Назад</button>
+    <h2 class="app-modal-title">Графік заліза</h2>
+  </div>
+
+  <div class="chart-period-type">
+    <button type="button" class="chart-period-btn active" data-period="week">Тиждень</button>
+    <button type="button" class="chart-period-btn" data-period="month">Місяць</button>
+  </div>
+
+  <div class="chart-nav-row">
+    <button type="button" id="chart-prev-btn" title="Попередній період">←</button>
+    <span id="chart-period-label" class="chart-period-label"></span>
+    <button type="button" id="chart-next-btn" title="Наступний період">→</button>
+  </div>
+
+  <div class="chart-average">
+    <span class="chart-average-label">Середнє за період</span>
+    <span id="chart-average-value" class="chart-average-value">0 мг</span>
+  </div>
+
+  <div id="chart-scroll-wrap" class="chart-scroll"></div>
+</section>
+
+<script src="app.js?v=21"></script>
 </body>
 </html>
