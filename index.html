@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
 
-<link rel="stylesheet" href="style.css?v=1.1">
+<link rel="stylesheet" href="style.css?v=1.2">
 </head>
 <body>
 <header class="topbar">
@@ -53,28 +53,17 @@
   </section>
 
   <section id="tab-tracker" class="tab-panel">
-    <div class="tracker-day-controls">
-      <div class="tracker-date-group">
-        <label for="tracker-date">День:</label>
-        <input type="date" id="tracker-date">
-        <button id="tracker-today-btn">Сьогодні</button>
-      </div>
-      <div class="tracker-nav-group">
-        <div class="tracker-day-nav">
-          <button id="tracker-prev-day" title="Попередній день">←</button>
-          <button id="tracker-next-day" title="Наступний день">→</button>
-        </div>
-        <button type="button" id="open-chart-btn" class="icon-btn icon-btn-text" title="Графік заліза по днях">📊 Графік</button>
-      </div>
+    <div class="tracker-controls-row">
+      <input type="date" id="tracker-date">
+      <button id="tracker-today-btn">Сьогодні</button>
+      <button id="tracker-prev-day" title="Попередній день">←</button>
+      <button id="tracker-next-day" title="Наступний день">→</button>
+      <button type="button" id="open-chart-btn" title="Графік заліза по днях">📊</button>
     </div>
 
     <div class="tracker-total">
       <span class="tracker-total-label">Залізо за день</span>
       <span id="tracker-total-value" class="tracker-total-value">0 мг</span>
-    </div>
-
-    <div class="iron-callout">
-      <p>Орієнтовна добова норма заліза: ~18 мг для жінок, ~8 мг для чоловіків (залежить від віку й стану здоров'я — не медична рекомендація).</p>
     </div>
 
     <div class="tracker-quick-add">
@@ -97,6 +86,10 @@
         <input type="number" id="tracker-manual-iron" placeholder="мг заліза" min="0" step="0.1">
         <button type="button" id="tracker-manual-add-btn">Додати</button>
       </div>
+    </div>
+
+    <div class="iron-callout">
+      <p>Орієнтовна добова норма заліза: ~18 мг для жінок, ~8 мг для чоловіків (залежить від віку й стану здоров'я — не медична рекомендація).</p>
     </div>
 
     <div id="tracker-log" class="tracker-log"></div>
@@ -189,6 +182,6 @@
   </div>
 </section>
 
-<script src="app.js?v=1.1"></script>
+<script src="app.js?v=1.2"></script>
 </body>
 </html>

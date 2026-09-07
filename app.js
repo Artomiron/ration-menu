@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.1';
+const APP_VERSION = 'v1.2';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
