@@ -1,6 +1,6 @@
 {
-  "name": "Їжачок",
-  "short_name": "Їжачок",
+  "name": "Ferro",
+  "short_name": "Ferro",
   "description": "Планування меню на тиждень з бази страв та рецептів",
   "start_url": "./index.html",
   "scope": "./",
