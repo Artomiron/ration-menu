@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v21';
+const APP_VERSION = 'v22';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -1523,39 +1523,70 @@ function computeDayTotal(dateKey) {
   return entries.reduce((sum, e) => sum + (Number(e.iron) || 0), 0);
 }
 
-function buildChartSVG(days, values, periodType) {
+function formatAxisValue(v) {
+  if (v >= 10) return String(Math.round(v));
+  return (Math.round(v * 10) / 10).toString();
+}
+
+function buildChartSVG(days, values, periodType, containerWidth) {
   const isWeek = periodType === 'week';
-  const barWidth = isWeek ? 34 : 14;
-  const barGap = isWeek ? 14 : 6;
-  const chartHeight = 200;
-  const paddingTop = 10;
-  const paddingBottom = 28;
+  const chartHeight = 240;
+  const paddingTop = 16;
+  const paddingBottom = 30;
+  const leftAxisWidth = 34;
+  const rightPad = 12;
   const plotHeight = chartHeight - paddingTop - paddingBottom;
   const maxValue = Math.max(...values, 1) * 1.15;
-  const totalWidth = days.length * (barWidth + barGap) + barGap;
   const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
   const avgY = paddingTop + plotHeight - (avg / maxValue) * plotHeight;
+
+  // Наповнюємо всю доступну ширину контейнера рівномірно; якщо для місяця
+  // це зробило б стовпчики нечитабельно тонкими — переходимо в режим
+  // горизонтального скролу з мінімальною комфортною шириною.
+  const availablePlotWidth = Math.max(containerWidth - leftAxisWidth - rightPad, 80);
+  const minSlot = isWeek ? 40 : 18;
+  const idealSlot = availablePlotWidth / days.length;
+  const fitMode = idealSlot >= minSlot;
+  const slot = fitMode ? idealSlot : minSlot;
+  const barWidth = Math.min(slot * 0.62, isWeek ? 56 : 24);
+  const barGap = slot - barWidth;
+  const plotWidth = slot * days.length;
+  const totalWidth = leftAxisWidth + plotWidth + rightPad;
+  const svgWidth = fitMode ? containerWidth : totalWidth;
+  const labelEvery = Math.max(1, Math.ceil(24 / slot));
+
+  const gridLines = [0, 0.5, 1]
+    .map((f) => {
+      const y = paddingTop + plotHeight - f * plotHeight;
+      return `
+        <line x1="${leftAxisWidth}" y1="${y}" x2="${totalWidth - rightPad}" y2="${y}" class="chart-grid-line" />
+        <text x="${leftAxisWidth - 8}" y="${y + 3}" text-anchor="end" class="chart-y-label">${formatAxisValue(maxValue * f)}</text>
+      `;
+    })
+    .join('');
 
   const bars = days
     .map((d, i) => {
       const value = values[i];
-      const x = barGap + i * (barWidth + barGap);
-      const barHeight = Math.max((value / maxValue) * plotHeight, 0);
+      const x = leftAxisWidth + i * slot + barGap / 2;
+      const barHeight = value > 0 ? Math.max((value / maxValue) * plotHeight, 2) : 0;
       const y = paddingTop + plotHeight - barHeight;
       const label = isWeek ? DAY_SHORT[i] : String(d.getDate());
       const dateLabel = `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}`;
+      const showLabel = isWeek || i % labelEvery === 0;
       return `
         <g>
           <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="3" class="chart-bar"><title>${dateLabel}: ${value.toFixed(1)} мг</title></rect>
-          <text x="${x + barWidth / 2}" y="${chartHeight - 10}" class="chart-x-label" text-anchor="middle">${label}</text>
+          ${showLabel ? `<text x="${x + barWidth / 2}" y="${chartHeight - 12}" class="chart-x-label" text-anchor="middle">${label}</text>` : ''}
         </g>
       `;
     })
     .join('');
 
   return `
-    <svg viewBox="0 0 ${totalWidth} ${chartHeight}" width="${totalWidth}" height="${chartHeight}" class="chart-svg">
-      <line x1="0" y1="${avgY}" x2="${totalWidth}" y2="${avgY}" class="chart-avg-line"><title>Середнє: ${avg.toFixed(1)} мг</title></line>
+    <svg viewBox="0 0 ${totalWidth} ${chartHeight}" width="${svgWidth}" height="${chartHeight}" class="chart-svg" preserveAspectRatio="xMidYMid meet">
+      ${gridLines}
+      <line x1="${leftAxisWidth}" y1="${avgY}" x2="${totalWidth - rightPad}" y2="${avgY}" class="chart-avg-line"><title>Середнє: ${avg.toFixed(1)} мг</title></line>
       ${bars}
     </svg>
   `;
@@ -1580,7 +1611,18 @@ function renderChart() {
 
   document.getElementById('chart-period-label').textContent = label;
   document.getElementById('chart-average-value').textContent = formatMg(avg);
-  document.getElementById('chart-scroll-wrap').innerHTML = buildChartSVG(days, values, chartPeriodType);
+  const wrap = document.getElementById('chart-scroll-wrap');
+  const containerWidth = wrap.clientWidth || 320;
+  wrap.innerHTML = buildChartSVG(days, values, chartPeriodType, containerWidth);
+}
+
+let chartResizeHandler = null;
+function ensureChartResizeHandler() {
+  if (chartResizeHandler) return;
+  chartResizeHandler = () => {
+    if (!document.getElementById('chart-modal').hidden) renderChart();
+  };
+  window.addEventListener('resize', chartResizeHandler);
 }
 
 document.querySelectorAll('.chart-period-btn').forEach((btn) => {
@@ -1618,8 +1660,9 @@ document.getElementById('open-chart-btn').addEventListener('click', () => {
   chartPeriodDate.setHours(0, 0, 0, 0);
   document.querySelectorAll('.chart-period-btn').forEach((b) => b.classList.remove('active'));
   document.querySelector('.chart-period-btn[data-period="week"]').classList.add('active');
-  renderChart();
   openAppModal('chart-modal');
+  renderChart();
+  ensureChartResizeHandler();
 });
 
 // ---------- Ініціалізація ----------

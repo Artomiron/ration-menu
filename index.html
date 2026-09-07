@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
 
-<link rel="stylesheet" href="style.css?v=21">
+<link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
 <header class="topbar">
@@ -108,77 +108,85 @@
 </nav>
 
 <section id="menu-preset-modal" class="app-modal" hidden>
-  <div class="app-modal-header">
-    <button type="button" class="app-modal-back" data-close-modal="menu-preset-modal">← Назад</button>
-    <h2 class="app-modal-title">Початковий план на 2 тижні</h2>
+  <div class="app-modal-inner">
+    <div class="app-modal-header">
+      <button type="button" class="app-modal-back" data-close-modal="menu-preset-modal">← Назад</button>
+      <h2 class="app-modal-title">Початковий план на 2 тижні</h2>
+    </div>
+    <p class="app-modal-hint">Це стартовий план, з якого починався застосунок. Він більше не підставляється автоматично в календар — тут лишається лише для довідки.</p>
+    <div id="menu-preset-content"></div>
   </div>
-  <p class="app-modal-hint">Це стартовий план, з якого починався застосунок. Він більше не підставляється автоматично в календар — тут лишається лише для довідки.</p>
-  <div id="menu-preset-content"></div>
 </section>
 
 <section id="dish-form-modal" class="app-modal" hidden>
-  <div class="app-modal-header">
-    <button type="button" class="app-modal-back" data-close-modal="dish-form-modal">← Назад</button>
-    <h2 class="app-modal-title">Нова страва</h2>
-  </div>
-  <div class="dish-form-card">
-    <form id="dish-form">
-      <input type="text" id="dish-name" placeholder="Назва страви" required>
-      <select id="dish-category" required></select>
-      <textarea id="dish-recipe" placeholder="Рецепт приготування" rows="3"></textarea>
-      <div class="dish-nutrition-inputs">
-        <label>Ккал (опційно) <input type="text" id="dish-kcal" placeholder="напр. 350"></label>
-        <label>Білок, г (опційно) <input type="text" id="dish-protein" placeholder="напр. 30"></label>
-        <label>Залізо, мг (опційно) <input type="text" id="dish-iron" placeholder="напр. 5.5"></label>
-        <label>Оцінка, 1-10 (опційно) <input type="text" id="dish-rating" placeholder="напр. 8"></label>
-      </div>
-      <button type="submit">Додати страву</button>
-    </form>
+  <div class="app-modal-inner">
+    <div class="app-modal-header">
+      <button type="button" class="app-modal-back" data-close-modal="dish-form-modal">← Назад</button>
+      <h2 class="app-modal-title">Нова страва</h2>
+    </div>
+    <div class="dish-form-card">
+      <form id="dish-form">
+        <input type="text" id="dish-name" placeholder="Назва страви" required>
+        <select id="dish-category" required></select>
+        <textarea id="dish-recipe" placeholder="Рецепт приготування" rows="3"></textarea>
+        <div class="dish-nutrition-inputs">
+          <label>Ккал (опційно) <input type="text" id="dish-kcal" placeholder="напр. 350"></label>
+          <label>Білок, г (опційно) <input type="text" id="dish-protein" placeholder="напр. 30"></label>
+          <label>Залізо, мг (опційно) <input type="text" id="dish-iron" placeholder="напр. 5.5"></label>
+          <label>Оцінка, 1-10 (опційно) <input type="text" id="dish-rating" placeholder="напр. 8"></label>
+        </div>
+        <button type="submit">Додати страву</button>
+      </form>
+    </div>
   </div>
 </section>
 
 <section id="iron-modal" class="app-modal" hidden>
-  <div class="app-modal-header">
-    <button type="button" class="app-modal-back" data-close-modal="iron-modal">← Назад</button>
-    <h2 class="app-modal-title">Топ-100 заліза</h2>
+  <div class="app-modal-inner">
+    <div class="app-modal-header">
+      <button type="button" class="app-modal-back" data-close-modal="iron-modal">← Назад</button>
+      <h2 class="app-modal-title">Топ-100 заліза</h2>
+    </div>
+    <div class="iron-callout">
+      <p>Значення орієнтовні (мг заліза на 100 г продукту), зібрані з відкритих харчових баз даних (USDA та інші). Сприймайте як довідковий орієнтир, а не аптечну точність.</p>
+      <p><strong>Верхівка списку:</strong> сушені спеції, трави, гриби та спіруліна мають шалено високий показник на 100 г, але порція таких продуктів зазвичай 1-3 г — тож реальний внесок у добову норму мінімальний.</p>
+      <p><strong>Гемове vs негемове:</strong> м'ясо, риба, морепродукти та печінка містять гемове залізо (засвоюється 15-35%), рослинні продукти — негемове (2-20%). Тобто менша цифра з гемового джерела може дати організму більше заліза, ніж більша цифра з рослинного.</p>
+    </div>
+    <div class="iron-filters">
+      <input type="text" id="iron-search" placeholder="Пошук продукту...">
+      <select id="iron-category-filter"></select>
+    </div>
+    <div id="iron-list" class="iron-list"></div>
   </div>
-  <div class="iron-callout">
-    <p>Значення орієнтовні (мг заліза на 100 г продукту), зібрані з відкритих харчових баз даних (USDA та інші). Сприймайте як довідковий орієнтир, а не аптечну точність.</p>
-    <p><strong>Верхівка списку:</strong> сушені спеції, трави, гриби та спіруліна мають шалено високий показник на 100 г, але порція таких продуктів зазвичай 1-3 г — тож реальний внесок у добову норму мінімальний.</p>
-    <p><strong>Гемове vs негемове:</strong> м'ясо, риба, морепродукти та печінка містять гемове залізо (засвоюється 15-35%), рослинні продукти — негемове (2-20%). Тобто менша цифра з гемового джерела може дати організму більше заліза, ніж більша цифра з рослинного.</p>
-  </div>
-  <div class="iron-filters">
-    <input type="text" id="iron-search" placeholder="Пошук продукту...">
-    <select id="iron-category-filter"></select>
-  </div>
-  <div id="iron-list" class="iron-list"></div>
 </section>
 
 <section id="chart-modal" class="app-modal" hidden>
-  <div class="app-modal-header">
-    <button type="button" class="app-modal-back" data-close-modal="chart-modal">← Назад</button>
-    <h2 class="app-modal-title">Графік заліза</h2>
-  </div>
+  <div class="app-modal-inner">
+    <div class="app-modal-header">
+      <button type="button" class="app-modal-back" data-close-modal="chart-modal">← Назад</button>
+      <h2 class="app-modal-title">Графік заліза</h2>
+    </div>
 
-  <div class="chart-period-type">
-    <button type="button" class="chart-period-btn active" data-period="week">Тиждень</button>
-    <button type="button" class="chart-period-btn" data-period="month">Місяць</button>
-  </div>
+    <div class="chart-period-type">
+      <button type="button" class="chart-period-btn active" data-period="week">Тиждень</button>
+      <button type="button" class="chart-period-btn" data-period="month">Місяць</button>
+    </div>
 
-  <div class="chart-nav-row">
-    <button type="button" id="chart-prev-btn" title="Попередній період">←</button>
-    <span id="chart-period-label" class="chart-period-label"></span>
-    <button type="button" id="chart-next-btn" title="Наступний період">→</button>
-  </div>
+    <div class="chart-nav-row">
+      <button type="button" id="chart-prev-btn" title="Попередній період">←</button>
+      <span id="chart-period-label" class="chart-period-label"></span>
+      <button type="button" id="chart-next-btn" title="Наступний період">→</button>
+    </div>
 
-  <div class="chart-average">
-    <span class="chart-average-label">Середнє за період</span>
-    <span id="chart-average-value" class="chart-average-value">0 мг</span>
-  </div>
+    <div class="chart-average">
+      <span class="chart-average-label">Середнє за період</span>
+      <span id="chart-average-value" class="chart-average-value">0 мг</span>
+    </div>
 
-  <div id="chart-scroll-wrap" class="chart-scroll"></div>
+    <div id="chart-scroll-wrap" class="chart-scroll"></div>
+  </div>
 </section>
 
-<script src="app.js?v=21"></script>
+<script src="app.js?v=22"></script>
 </body>
 </html>
