@@ -792,6 +792,12 @@ main {
 
 .tracker-nav-group {
   display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tracker-day-nav {
+  display: flex;
   gap: 10px;
 }
 
