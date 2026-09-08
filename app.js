@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.5';
+const APP_VERSION = 'v1.6';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -160,6 +160,17 @@ function nextDishId() {
 
 function findDish(id) {
   return dishes.find((d) => d.id === id) || null;
+}
+
+function parseIronValue(v) {
+  if (v == null || v === '') return 0;
+  const str = String(v).trim();
+  const rangeParts = str.split(/[–—-]/).map((p) => Number(p.trim().replace(',', '.'))).filter((n) => Number.isFinite(n));
+  if (rangeParts.length >= 2) {
+    return rangeParts.reduce((sum, n) => sum + n, 0) / rangeParts.length;
+  }
+  const single = Number(str.replace(',', '.'));
+  return Number.isFinite(single) ? single : 0;
 }
 
 // ---------- Дати / тиждень ----------
@@ -1051,7 +1062,7 @@ trackerDropdown.addEventListener('mousedown', (e) => {
   if (opt.dataset.type === 'dish') {
     const dish = findDish(opt.dataset.id);
     if (dish) {
-      trackerAdd({ type: 'dish', name: dish.name, iron: Number(dish.iron) || 0 });
+      trackerAdd({ type: 'dish', name: dish.name, iron: parseIronValue(dish.iron) });
       added = true;
     }
   } else if (opt.dataset.type === 'product') {
@@ -1239,7 +1250,7 @@ function findBestFoodMatch(description, stemDF) {
     }
   });
   if (bestDish) {
-    return { type: 'dish', id: bestDish.id, name: bestDish.name, iron: Number(bestDish.iron) || 0 };
+    return { type: 'dish', id: bestDish.id, name: bestDish.name, iron: parseIronValue(bestDish.iron) };
   }
 
   return null;
