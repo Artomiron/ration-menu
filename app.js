@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.8';
+const APP_VERSION = 'v1.9';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -1768,13 +1768,43 @@ async function buildChartImageBlob() {
       img.src = url;
     });
 
+    const periodLabel = document.getElementById('chart-period-label').textContent;
+    const avgLabel = document.getElementById('chart-average-value').textContent;
+    const fontStack = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    const headerHeight = 76;
+
     const scale = 2;
     const canvas = document.createElement('canvas');
     canvas.width = width * scale;
-    canvas.height = height * scale;
+    canvas.height = (headerHeight + height) * scale;
     const ctx = canvas.getContext('2d');
     ctx.scale(scale, scale);
-    ctx.drawImage(img, 0, 0, width, height);
+
+    ctx.fillStyle = getComputedStyle(document.body).backgroundColor || '#121212';
+    ctx.fillRect(0, 0, width, headerHeight + height);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#f2f2f2';
+    ctx.font = `600 20px ${fontStack}`;
+    ctx.fillText(periodLabel, width / 2, 32);
+
+    const avgPrefix = 'Середнє за період: ';
+    ctx.font = `400 16px ${fontStack}`;
+    const prefixWidth = ctx.measureText(avgPrefix).width;
+    ctx.font = `700 18px ${fontStack}`;
+    const valueWidth = ctx.measureText(avgLabel).width;
+    const startX = width / 2 - (prefixWidth + valueWidth) / 2;
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#9a9a9a';
+    ctx.font = `400 16px ${fontStack}`;
+    ctx.fillText(avgPrefix, startX, 58);
+    ctx.fillStyle = '#4f9dff';
+    ctx.font = `700 18px ${fontStack}`;
+    ctx.fillText(avgLabel, startX + prefixWidth, 58);
+
+    ctx.drawImage(img, 0, headerHeight, width, height);
 
     return await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
   } finally {
