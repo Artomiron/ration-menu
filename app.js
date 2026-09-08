@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.6';
+const APP_VERSION = 'v1.7';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -974,8 +974,9 @@ const trackerDropdown = document.getElementById('tracker-dropdown');
 const trackerLogEl = document.getElementById('tracker-log');
 
 function formatMg(n) {
-  const rounded = Math.round(n * 10) / 10;
-  return (rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1)) + ' мг';
+  const rounded = Math.round((Number(n) || 0) * 100) / 100;
+  const str = rounded.toFixed(2).replace(/\.?0+$/, '');
+  return str + ' мг';
 }
 
 function trackerEntries() {
@@ -1603,7 +1604,7 @@ function buildChartSVG(days, values, periodType, containerWidth) {
       const showLabel = isWeek || i % labelEvery === 0;
       return `
         <g>
-          <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="3" class="chart-bar"><title>${dateLabel}: ${value.toFixed(1)} мг</title></rect>
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="3" class="chart-bar"><title>${dateLabel}: ${formatMg(value)}</title></rect>
           ${showLabel ? `<text x="${x + barWidth / 2}" y="${chartHeight - 12}" class="chart-x-label" text-anchor="middle">${label}</text>` : ''}
         </g>
       `;
@@ -1613,7 +1614,7 @@ function buildChartSVG(days, values, periodType, containerWidth) {
   return `
     <svg viewBox="0 0 ${totalWidth} ${chartHeight}" width="${svgWidth}" height="${chartHeight}" class="chart-svg" preserveAspectRatio="xMidYMid meet">
       ${gridLines}
-      <line x1="${leftAxisWidth}" y1="${avgY}" x2="${totalWidth - rightPad}" y2="${avgY}" class="chart-avg-line"><title>Середнє: ${avg.toFixed(1)} мг</title></line>
+      <line x1="${leftAxisWidth}" y1="${avgY}" x2="${totalWidth - rightPad}" y2="${avgY}" class="chart-avg-line"><title>Середнє: ${formatMg(avg)}</title></line>
       ${bars}
     </svg>
   `;
