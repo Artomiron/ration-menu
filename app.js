@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.7';
+const APP_VERSION = 'v1.8';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -985,6 +985,49 @@ function trackerEntries() {
   return ironLog[key];
 }
 
+function buildDaySummaryText() {
+  const entries = trackerEntries();
+  const total = entries.reduce((sum, e) => sum + (Number(e.iron) || 0), 0);
+  const dateLabel = `${pad2(trackerDate.getDate())}.${pad2(trackerDate.getMonth() + 1)}.${trackerDate.getFullYear()}`;
+  const names = entries.map((e) => e.name).join(', ');
+  let text = `Залізо за ${dateLabel}: ${formatMg(total)}`;
+  if (names) text += ` — ${names}`;
+  return text;
+}
+
+function shareTextFallback(text, btn) {
+  const restore = () => {
+    btn.textContent = '📤';
+    btn.disabled = false;
+  };
+  const showCopied = () => {
+    btn.textContent = '✓';
+    btn.disabled = true;
+    setTimeout(restore, 1200);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(showCopied).catch(() => {
+      window.prompt('Скопіюйте текст:', text);
+    });
+  } else {
+    window.prompt('Скопіюйте текст:', text);
+  }
+}
+
+document.getElementById('tracker-share-btn').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
+  const text = buildDaySummaryText();
+  if (navigator.share) {
+    try {
+      await navigator.share({ text });
+    } catch (err) {
+      if (err.name !== 'AbortError') shareTextFallback(text, btn);
+    }
+  } else {
+    shareTextFallback(text, btn);
+  }
+});
+
 function trackerAdd(entry) {
   entry.id = nextDishId();
   trackerEntries().push(entry);
@@ -1680,6 +1723,94 @@ document.getElementById('chart-next-btn').addEventListener('click', () => {
     chartPeriodDate.setMonth(chartPeriodDate.getMonth() + 1);
   }
   renderChart();
+});
+
+function inlineComputedStyles(sourceEl, cloneEl) {
+  const props = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'font-size', 'font-family', 'font-weight', 'opacity', 'text-anchor'];
+  const computed = getComputedStyle(sourceEl);
+  props.forEach((p) => {
+    const val = computed.getPropertyValue(p);
+    if (val) cloneEl.style.setProperty(p, val);
+  });
+  for (let i = 0; i < sourceEl.children.length; i++) {
+    inlineComputedStyles(sourceEl.children[i], cloneEl.children[i]);
+  }
+}
+
+async function buildChartImageBlob() {
+  const wrap = document.getElementById('chart-scroll-wrap');
+  const svg = wrap.querySelector('svg');
+  if (!svg) return null;
+
+  const width = Number(svg.getAttribute('width')) || svg.viewBox.baseVal.width;
+  const height = Number(svg.getAttribute('height')) || svg.viewBox.baseVal.height;
+
+  const clone = svg.cloneNode(true);
+  inlineComputedStyles(svg, clone);
+
+  const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  bg.setAttribute('x', '0');
+  bg.setAttribute('y', '0');
+  bg.setAttribute('width', String(width));
+  bg.setAttribute('height', String(height));
+  bg.setAttribute('fill', getComputedStyle(document.body).backgroundColor || '#121212');
+  clone.insertBefore(bg, clone.firstChild);
+
+  const svgString = new XMLSerializer().serializeToString(clone);
+  const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+
+  try {
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = url;
+    });
+
+    const scale = 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    return await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+document.getElementById('chart-share-btn').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  try {
+    const blob = await buildChartImageBlob();
+    if (!blob) return;
+    const file = new File([blob], 'zalizo-grafik.png', { type: 'image/png' });
+    const periodLabel = document.getElementById('chart-period-label').textContent;
+    const avgLabel = document.getElementById('chart-average-value').textContent;
+    const text = `Графік заліза — ${periodLabel}, середнє ${avgLabel}`;
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Графік заліза', text });
+    } else if (navigator.share) {
+      await navigator.share({ title: 'Графік заліза', text });
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'zalizo-grafik.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
 });
 
 document.getElementById('open-chart-btn').addEventListener('click', () => {

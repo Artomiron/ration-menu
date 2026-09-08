@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ferro">
 
-<link rel="stylesheet" href="style.css?v=1.7">
+<link rel="stylesheet" href="style.css?v=1.8">
 </head>
 <body>
 <header class="topbar">
@@ -58,6 +58,7 @@
       <button id="tracker-prev-day" title="Попередній день">←</button>
       <button id="tracker-next-day" title="Наступний день">→</button>
       <button type="button" id="open-chart-btn" title="Графік заліза по днях">📊</button>
+      <button type="button" id="tracker-share-btn" title="Поділитись підсумком дня">📤</button>
     </div>
 
     <div class="tracker-total">
@@ -152,6 +153,7 @@
     <div class="app-modal-header">
       <button type="button" class="app-modal-back" data-close-modal="chart-modal">← Назад</button>
       <h2 class="app-modal-title">Графік заліза</h2>
+      <button type="button" id="chart-share-btn" class="icon-btn chart-share-btn" title="Поділитись графіком">📤</button>
     </div>
 
     <div class="chart-period-type">
@@ -190,6 +192,6 @@
   </div>
 </section>
 
-<script src="app.js?v=1.7"></script>
+<script src="app.js?v=1.8"></script>
 </body>
 </html>
