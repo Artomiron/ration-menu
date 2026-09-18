@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.9';
+const APP_VERSION = 'v1.10';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -1678,7 +1678,11 @@ function renderChart() {
     label = `${MONTH_NAMES[m]} ${y}`;
   }
   const values = days.map((d) => computeDayTotal(toISODate(d)));
-  const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0);
+  const elapsedCount = days.filter((d) => d <= todayMidnight).length;
+  const sum = values.reduce((a, b) => a + b, 0);
+  const avg = elapsedCount > 0 ? sum / elapsedCount : 0;
 
   document.getElementById('chart-period-label').textContent = label;
   document.getElementById('chart-average-value').textContent = formatMg(avg);
