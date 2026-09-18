@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.10';
+const APP_VERSION = 'v1.11';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -1599,7 +1599,7 @@ function formatAxisValue(v) {
   return (Math.round(v * 10) / 10).toString();
 }
 
-function buildChartSVG(days, values, periodType, containerWidth) {
+function buildChartSVG(days, values, periodType, containerWidth, avg) {
   const isWeek = periodType === 'week';
   const chartHeight = 240;
   const paddingTop = 16;
@@ -1607,8 +1607,7 @@ function buildChartSVG(days, values, periodType, containerWidth) {
   const leftAxisWidth = 34;
   const rightPad = 12;
   const plotHeight = chartHeight - paddingTop - paddingBottom;
-  const maxValue = Math.max(...values, 1) * 1.15;
-  const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+  const maxValue = Math.max(...values, avg, 1) * 1.15;
   const avgY = paddingTop + plotHeight - (avg / maxValue) * plotHeight;
 
   // Наповнюємо всю доступну ширину контейнера рівномірно; якщо для місяця
@@ -1688,7 +1687,7 @@ function renderChart() {
   document.getElementById('chart-average-value').textContent = formatMg(avg);
   const wrap = document.getElementById('chart-scroll-wrap');
   const containerWidth = wrap.clientWidth || 320;
-  wrap.innerHTML = buildChartSVG(days, values, chartPeriodType, containerWidth);
+  wrap.innerHTML = buildChartSVG(days, values, chartPeriodType, containerWidth, avg);
 }
 
 let chartResizeHandler = null;
