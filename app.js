@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.11';
+const APP_VERSION = 'v1.12';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -566,6 +566,7 @@ function renderDishRow(dish) {
         <label>Ккал <input type="text" class="dish-kcal-input" value="${escapeHTML(dish.kcal || '')}" placeholder="напр. 350"></label>
         <label>Білок, г <input type="text" class="dish-protein-input" value="${escapeHTML(dish.protein || '')}" placeholder="напр. 30"></label>
         <label>Залізо, мг <input type="text" class="dish-iron-input" value="${escapeHTML(dish.iron || '')}" placeholder="напр. 5.5"></label>
+        <label>Вага порції, г <input type="text" class="dish-portion-input" value="${escapeHTML(dish.portionGrams || '')}" placeholder="напр. 250"></label>
         <label>Оцінка (1-10) <input type="text" class="dish-rating-input" value="${escapeHTML(dish.rating || '')}" placeholder="напр. 8"></label>
       </div>
     `;
@@ -594,6 +595,10 @@ function renderDishRow(dish) {
       dish.iron = e.target.value.trim();
       saveDishes(dishes);
       renderDishes();
+    });
+    expanded.querySelector('.dish-portion-input').addEventListener('change', (e) => {
+      dish.portionGrams = e.target.value.trim();
+      saveDishes(dishes);
     });
     expanded.querySelector('.dish-rating-input').addEventListener('change', (e) => {
       dish.rating = e.target.value.trim();
@@ -684,6 +689,7 @@ dishForm.addEventListener('submit', (e) => {
     kcal: kcalInput.value.trim(),
     protein: proteinInput.value.trim(),
     iron: ironInput.value.trim(),
+    portionGrams: document.getElementById('dish-portion').value.trim(),
     rating: ratingInput.value.trim(),
   });
   saveDishes(dishes);
@@ -1106,7 +1112,13 @@ trackerDropdown.addEventListener('mousedown', (e) => {
   if (opt.dataset.type === 'dish') {
     const dish = findDish(opt.dataset.id);
     if (dish) {
-      trackerAdd({ type: 'dish', name: dish.name, iron: parseIronValue(dish.iron) });
+      const portion = parseIronValue(dish.portionGrams);
+      const ironTotal = parseIronValue(dish.iron);
+      if (portion > 0 && ironTotal > 0) {
+        trackerAdd({ type: 'top100', name: dish.name, per100: (ironTotal / portion) * 100, grams: portion, iron: ironTotal });
+      } else {
+        trackerAdd({ type: 'dish', name: dish.name, iron: ironTotal });
+      }
       added = true;
     }
   } else if (opt.dataset.type === 'product') {
@@ -1522,7 +1534,21 @@ document.getElementById('tracker-next-day').addEventListener('click', () => {
   renderTracker();
 });
 
+let manualAddMode = 'portion';
+
+function setManualAddMode(mode) {
+  manualAddMode = mode;
+  document.querySelectorAll('.manual-mode-btn').forEach((b) => b.classList.toggle('active', b.dataset.mode === mode));
+  document.getElementById('tracker-manual-grams').hidden = mode !== 'weight';
+  document.getElementById('tracker-manual-iron').placeholder = mode === 'weight' ? 'мг заліза на 100 г' : 'мг заліза';
+}
+
+document.querySelectorAll('.manual-mode-btn').forEach((btn) => {
+  btn.addEventListener('click', () => setManualAddMode(btn.dataset.mode));
+});
+
 document.getElementById('open-manual-add-btn').addEventListener('click', () => {
+  setManualAddMode('portion');
   openAppModal('manual-add-modal');
   document.getElementById('tracker-manual-name').focus();
 });
@@ -1530,12 +1556,26 @@ document.getElementById('open-manual-add-btn').addEventListener('click', () => {
 document.getElementById('tracker-manual-add-btn').addEventListener('click', () => {
   const nameInput = document.getElementById('tracker-manual-name');
   const ironInput = document.getElementById('tracker-manual-iron');
+  const gramsInput = document.getElementById('tracker-manual-grams');
   const name = nameInput.value.trim();
   const iron = Number(ironInput.value);
   if (!name || !Number.isFinite(iron) || iron < 0) return;
-  trackerAdd({ type: 'manual', name, iron: Math.round(iron * 100) / 100 });
+  if (manualAddMode === 'weight') {
+    const grams = Number(gramsInput.value);
+    if (!Number.isFinite(grams) || grams <= 0) return;
+    trackerAdd({
+      type: 'top100',
+      name,
+      per100: iron,
+      grams,
+      iron: Math.round(((iron * grams) / 100) * 100) / 100,
+    });
+  } else {
+    trackerAdd({ type: 'manual', name, iron: Math.round(iron * 100) / 100 });
+  }
   nameInput.value = '';
   ironInput.value = '';
+  gramsInput.value = '';
   closeAppModal('manual-add-modal');
 });
 

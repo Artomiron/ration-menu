@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ferro">
 
-<link rel="stylesheet" href="style.css?v=1.11">
+<link rel="stylesheet" href="style.css?v=1.12">
 </head>
 <body>
 <header class="topbar">
@@ -121,6 +121,7 @@
           <label>Ккал (опційно) <input type="text" id="dish-kcal" placeholder="напр. 350"></label>
           <label>Білок, г (опційно) <input type="text" id="dish-protein" placeholder="напр. 30"></label>
           <label>Залізо, мг (опційно) <input type="text" id="dish-iron" placeholder="напр. 5.5"></label>
+          <label>Вага порції, г (опційно) <input type="text" id="dish-portion" placeholder="напр. 250"></label>
           <label>Оцінка, 1-10 (опційно) <input type="text" id="dish-rating" placeholder="напр. 8"></label>
         </div>
         <button type="submit">Додати страву</button>
@@ -183,15 +184,20 @@
       <h2 class="app-modal-title">Додати власну страву</h2>
     </div>
     <div class="dish-form-card">
+      <div class="chart-period-type manual-mode-toggle">
+        <button type="button" class="chart-period-btn manual-mode-btn active" data-mode="portion">На порцію</button>
+        <button type="button" class="chart-period-btn manual-mode-btn" data-mode="weight">На вагу</button>
+      </div>
       <div class="tracker-manual-add-row">
         <input type="text" id="tracker-manual-name" placeholder="Назва страви">
         <input type="number" id="tracker-manual-iron" placeholder="мг заліза" min="0" step="0.01">
+        <input type="number" id="tracker-manual-grams" placeholder="грамів" min="0" step="1" hidden>
         <button type="button" id="tracker-manual-add-btn">Додати</button>
       </div>
     </div>
   </div>
 </section>
 
-<script src="app.js?v=1.11"></script>
+<script src="app.js?v=1.12"></script>
 </body>
 </html>
