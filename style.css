@@ -1645,5 +1645,6 @@ button, select, summary, .combo-option, .tab-btn {
   margin-right: -6px;
 }
 
-.tab-btn[data-tab="tracker"] .tab-icon { color: #ef4444; }
-.tab-btn[data-tab="tracker"].active svg { fill-opacity: 0.35; }
+.tab-btn[data-tab="tracker"] .tab-icon { color: #e5252a; }
+.tab-btn[data-tab="tracker"] svg,
+.tab-btn[data-tab="tracker"].active svg { fill: currentColor; fill-opacity: 1; }
