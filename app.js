@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.13';
+const APP_VERSION = 'v1.14';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -250,6 +250,42 @@ const expandedRecipeKeys = new Set();
 
 // ---------- Рендер: Меню ----------
 
+const MONTH_TITLES = ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'];
+const WEEKDAY_ABBR = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'НД'];
+
+function weekStripHTML(monday, selectedKey) {
+  const todayKey = toISODate(new Date());
+  return getWeekDays(monday)
+    .map((d, i) => {
+      const key = toISODate(d);
+      const cls = 'ws-day' + (key === selectedKey ? ' selected' : '') + (key === todayKey ? ' today' : '');
+      return `<button type="button" class="${cls}" data-date="${key}" data-index="${i}"><span class="ws-dow">${WEEKDAY_ABBR[i]}</span><span class="ws-num">${d.getDate()}</span></button>`;
+    })
+    .join('');
+}
+
+function attachWeekSwipe(el, onSwipe) {
+  let startX = null;
+  let startY = null;
+  el.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  el.addEventListener('touchend', (e) => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    startX = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) onSwipe(dx < 0 ? 1 : -1);
+  }, { passive: true });
+}
+
+function openNativePicker(input) {
+  input.addEventListener('click', () => {
+    try { if (input.showPicker) input.showPicker(); } catch (e) { /* picker already open or unsupported */ }
+  });
+}
+
 const weekPicker = document.getElementById('week-picker');
 const weekRangeEl = document.getElementById('week-range');
 const daysContainer = document.getElementById('days-container');
@@ -463,7 +499,33 @@ function renderDays() {
 
   weekRangeEl.textContent = formatRange(currentMondayDate);
   weekPicker.value = isoWeekValueForDate(currentMondayDate);
+  renderMenuCalendar();
 }
+
+let menuSelectedKey = toISODate(new Date());
+
+function renderMenuCalendar() {
+  const thursday = new Date(currentMondayDate);
+  thursday.setDate(thursday.getDate() + 3);
+  document.getElementById('menu-month-title').textContent = `${MONTH_TITLES[thursday.getMonth()]} ${thursday.getFullYear() === new Date().getFullYear() ? '' : thursday.getFullYear()}`.trim();
+  document.getElementById('menu-week-strip').innerHTML = weekStripHTML(currentMondayDate, menuSelectedKey);
+}
+
+document.getElementById('menu-week-strip').addEventListener('click', (e) => {
+  const btn = e.target.closest('.ws-day');
+  if (!btn) return;
+  menuSelectedKey = btn.dataset.date;
+  renderMenuCalendar();
+  const card = daysContainer.children[Number(btn.dataset.index)];
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+attachWeekSwipe(document.getElementById('menu-week-strip'), (dir) => {
+  currentMondayDate.setDate(currentMondayDate.getDate() + dir * 7);
+  renderDays();
+});
+
+openNativePicker(weekPicker);
 
 weekPicker.addEventListener('change', () => {
   if (!weekPicker.value) return;
@@ -1002,8 +1064,9 @@ function buildDaySummaryText() {
 }
 
 function shareTextFallback(text, btn) {
+  const originalHTML = btn.innerHTML;
   const restore = () => {
-    btn.textContent = '📤';
+    btn.innerHTML = originalHTML;
     btn.disabled = false;
   };
   const showCopied = () => {
@@ -1472,8 +1535,16 @@ document.getElementById('tracker-quick-parse-btn').addEventListener('click', () 
   renderQuickPreview();
 });
 
+function renderTrackerCalendar() {
+  const yearSuffix = trackerDate.getFullYear() === new Date().getFullYear() ? '' : ` ${trackerDate.getFullYear()}`;
+  document.getElementById('tracker-month-title').textContent = MONTH_TITLES[trackerDate.getMonth()] + yearSuffix;
+  const monday = mondayOfWeekInput(isoWeekValueForDate(trackerDate));
+  document.getElementById('tracker-week-strip').innerHTML = weekStripHTML(monday, toISODate(trackerDate));
+}
+
 function renderTracker() {
   trackerDateInput.value = toISODate(trackerDate);
+  renderTrackerCalendar();
 
   const entries = trackerEntries();
   const total = entries.reduce((sum, e) => sum + (Number(e.iron) || 0), 0);
@@ -1524,15 +1595,25 @@ trackerDateInput.addEventListener('change', () => {
   renderTracker();
 });
 
-document.getElementById('tracker-prev-day').addEventListener('click', () => {
-  trackerDate.setDate(trackerDate.getDate() - 1);
+function shiftTrackerWeek(dir) {
+  trackerDate.setDate(trackerDate.getDate() + dir * 7);
+  renderTracker();
+}
+
+document.getElementById('tracker-prev-day').addEventListener('click', () => shiftTrackerWeek(-1));
+document.getElementById('tracker-next-day').addEventListener('click', () => shiftTrackerWeek(1));
+
+document.getElementById('tracker-week-strip').addEventListener('click', (e) => {
+  const btn = e.target.closest('.ws-day');
+  if (!btn) return;
+  const [y, m, d] = btn.dataset.date.split('-').map(Number);
+  trackerDate = new Date(y, m - 1, d);
+  trackerDate.setHours(0, 0, 0, 0);
   renderTracker();
 });
 
-document.getElementById('tracker-next-day').addEventListener('click', () => {
-  trackerDate.setDate(trackerDate.getDate() + 1);
-  renderTracker();
-});
+attachWeekSwipe(document.getElementById('tracker-week-strip'), shiftTrackerWeek);
+openNativePicker(trackerDateInput);
 
 let manualAddMode = 'portion';
 
@@ -1634,6 +1715,12 @@ function computeDayTotal(dateKey) {
   return entries.reduce((sum, e) => sum + (Number(e.iron) || 0), 0);
 }
 
+function formatBarLabel(v, full) {
+  if (full) return formatMg(v).replace(' мг', '');
+  if (v >= 10) return String(Math.round(v));
+  return String(Math.round(v * 10) / 10);
+}
+
 function formatAxisValue(v) {
   if (v >= 10) return String(Math.round(v));
   return (Math.round(v * 10) / 10).toString();
@@ -1687,6 +1774,7 @@ function buildChartSVG(days, values, periodType, containerWidth, avg) {
       return `
         <g>
           <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="3" class="chart-bar"><title>${dateLabel}: ${formatMg(value)}</title></rect>
+          ${value > 0 ? `<text x="${x + barWidth / 2}" y="${y - 4}" class="chart-value-label" text-anchor="middle">${formatBarLabel(value, isWeek)}</text>` : ''}
           ${showLabel ? `<text x="${x + barWidth / 2}" y="${chartHeight - 12}" class="chart-x-label" text-anchor="middle">${label}</text>` : ''}
         </g>
       `;

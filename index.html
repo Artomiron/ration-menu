@@ -18,7 +18,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ferro">
 
-<link rel="stylesheet" href="style.css?v=1.13">
+<link rel="stylesheet" href="style.css?v=1.14">
 </head>
 <body>
 <header class="topbar">
@@ -30,18 +30,19 @@
 
 <main>
   <section id="tab-menu" class="tab-panel active">
-    <div class="week-controls">
-      <div class="week-picker-group">
-        <label for="week-picker">Тиждень:</label>
-        <input type="week" id="week-picker">
+    <div class="cal-header">
+      <label class="cal-title">
+        <span id="menu-month-title"></span><svg class="cal-chev" viewBox="0 0 12 8" width="12" height="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 1.5 6 6l4.5-4.5"/></svg>
+        <input type="week" id="week-picker" aria-label="Обрати тиждень">
+      </label>
+      <div class="cal-actions">
+        <button type="button" id="prev-week" class="cal-btn" title="Попередній тиждень" aria-label="Попередній тиждень"><svg viewBox="0 0 12 20" width="11" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 2 10l8 8"/></svg></button>
+        <button type="button" id="next-week" class="cal-btn" title="Наступний тиждень" aria-label="Наступний тиждень"><svg viewBox="0 0 12 20" width="11" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 2 8 8-8 8"/></svg></button>
+        <button type="button" id="menu-preset-btn" class="cal-btn cal-btn-fill cal-btn-text" title="Початковий план на 2 тижні">📖 План</button>
       </div>
-      <div class="week-nav-group">
-        <span id="week-range" class="week-range"></span>
-        <button id="prev-week" title="Попередній тиждень">←</button>
-        <button id="next-week" title="Наступний тиждень">→</button>
-      </div>
-      <button type="button" id="menu-preset-btn" class="icon-btn icon-btn-text" title="Початковий план на 2 тижні">📖 План</button>
     </div>
+    <div id="menu-week-strip" class="week-strip"></div>
+    <div id="week-range" class="week-range-caption"></div>
     <div id="days-container" class="days-container"></div>
   </section>
 
@@ -55,13 +56,19 @@
   </section>
 
   <section id="tab-tracker" class="tab-panel">
-    <div class="tracker-controls-row">
-      <input type="date" id="tracker-date">
-      <button id="tracker-prev-day" title="Попередній день">←</button>
-      <button id="tracker-next-day" title="Наступний день">→</button>
-      <button type="button" id="open-chart-btn" title="Графік заліза по днях">📊</button>
-      <button type="button" id="tracker-share-btn" title="Поділитись підсумком дня">📤</button>
+    <div class="cal-header">
+      <label class="cal-title">
+        <span id="tracker-month-title"></span><svg class="cal-chev" viewBox="0 0 12 8" width="12" height="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 1.5 6 6l4.5-4.5"/></svg>
+        <input type="date" id="tracker-date" aria-label="Обрати дату">
+      </label>
+      <div class="cal-actions">
+        <button type="button" id="tracker-prev-day" class="cal-btn" title="Попередній тиждень" aria-label="Попередній тиждень"><svg viewBox="0 0 12 20" width="11" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 2 10l8 8"/></svg></button>
+        <button type="button" id="tracker-next-day" class="cal-btn" title="Наступний тиждень" aria-label="Наступний тиждень"><svg viewBox="0 0 12 20" width="11" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 2 8 8-8 8"/></svg></button>
+        <button type="button" id="open-chart-btn" class="cal-btn cal-btn-fill" title="Графік заліза по днях" aria-label="Графік заліза"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg></button>
+        <button type="button" id="tracker-share-btn" class="cal-btn cal-btn-fill" title="Поділитись підсумком дня" aria-label="Поділитись"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg></button>
+      </div>
     </div>
+    <div id="tracker-week-strip" class="week-strip"></div>
 
     <div class="tracker-total">
       <span class="tracker-total-label">Залізо за день</span>
@@ -156,7 +163,7 @@
     <div class="app-modal-header">
       <button type="button" class="app-modal-back" data-close-modal="chart-modal"><svg class="back-chevron" viewBox="0 0 12 20" width="12" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 2 10l8 8"/></svg>Назад</button>
       <h2 class="app-modal-title">Графік заліза</h2>
-      <button type="button" id="chart-share-btn" class="icon-btn chart-share-btn" title="Поділитись графіком">📤</button>
+      <button type="button" id="chart-share-btn" class="icon-btn chart-share-btn" title="Поділитись графіком" aria-label="Поділитись"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg></button>
     </div>
 
     <div class="chart-period-type">
@@ -200,6 +207,6 @@
   </div>
 </section>
 
-<script src="app.js?v=1.13"></script>
+<script src="app.js?v=1.14"></script>
 </body>
 </html>

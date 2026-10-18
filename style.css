@@ -1494,3 +1494,132 @@ button, select, summary, .combo-option, .tab-btn {
 
   .tab-btn:active { opacity: 0.5; }
 }
+
+/* ---------- Календар у стилі Daily ---------- */
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.cal-title {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cal-title .cal-chev { color: var(--accent); flex: 0 0 auto; }
+
+.cal-title input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.cal-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cal-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--text-dim);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.cal-btn-fill {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cal-btn-text {
+  width: auto;
+  padding: 0 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 14px;
+  touch-action: pan-y;
+}
+
+.ws-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 62px;
+  padding: 9px 0 10px;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ws-dow {
+  font-size: 0.68rem;
+  letter-spacing: 0.3px;
+  color: var(--text-dim);
+}
+
+.ws-num {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.ws-day.today:not(.selected) .ws-num { color: var(--accent); }
+
+.ws-day.selected {
+  background: var(--accent);
+  color: #07172b;
+}
+
+.ws-day.selected .ws-dow { color: rgba(7, 23, 43, 0.75); }
+
+.week-range-caption {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  text-align: center;
+  margin: -6px 0 14px;
+}
+
+.day-card { scroll-margin-top: 76px; }
+
+.chart-value-label {
+  fill: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+}
