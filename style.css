@@ -1378,3 +1378,119 @@ main {
   fill: var(--text-dim);
   font-size: 9px;
 }
+
+/* ---------- iOS polish ---------- */
+
+:root { color-scheme: dark; }
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+* { -webkit-tap-highlight-color: transparent; }
+
+button, select, summary, .combo-option, .tab-btn {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.tab-btn {
+  min-height: 49px;
+  gap: 3px;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.tab-btn .tab-icon { display: flex; }
+.tab-btn.active svg { fill: currentColor; fill-opacity: 0.18; }
+
+.app-modal-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.app-modal-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  padding: 8px 8px 8px 0;
+  min-height: 44px;
+  font-size: 1.05rem;
+}
+
+.app-modal-back:hover { background: transparent; }
+.app-modal-back .back-chevron { flex: 0 0 auto; }
+
+.app-modal-title {
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+@keyframes ios-push-in {
+  from { transform: translateX(28px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.app-modal:not([hidden]) {
+  animation: ios-push-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-modal:not([hidden]) { animation: none; }
+}
+
+@media (max-width: 520px) {
+  main {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]),
+  select {
+    min-height: 44px;
+  }
+
+  .tracker-controls-row button,
+  .week-controls button,
+  .icon-btn,
+  .chart-period-btn,
+  .chart-nav-row button,
+  .tracker-manual-add-row button,
+  .tracker-quick-add button,
+  .tracker-manual-add-trigger,
+  #dish-form button,
+  .tracker-remove,
+  .dish-row-delete,
+  .quick-preview-remove {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .tracker-controls-row { gap: 6px; }
+
+  button:active,
+  .combo-option:active {
+    opacity: 0.55;
+    transition: opacity 0.05s;
+  }
+
+  .tab-btn:active { opacity: 0.5; }
+}

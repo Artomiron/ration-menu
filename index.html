@@ -7,6 +7,8 @@
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#121212">
+<meta name="color-scheme" content="dark">
+<meta name="format-detection" content="telephone=no">
 
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -16,7 +18,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ferro">
 
-<link rel="stylesheet" href="style.css?v=1.12">
+<link rel="stylesheet" href="style.css?v=1.13">
 </head>
 <body>
 <header class="topbar">
@@ -90,15 +92,15 @@
 </main>
 
 <nav class="bottom-tabs">
-  <button class="tab-btn active" data-tab="menu"><span class="tab-icon">🗓️</span><span>Меню</span></button>
-  <button class="tab-btn" data-tab="dishes"><span class="tab-icon">📋</span><span>Страви</span></button>
-  <button class="tab-btn" data-tab="tracker"><span class="tab-icon">🩸</span><span>Трекер</span></button>
+  <button class="tab-btn active" data-tab="menu"><span class="tab-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span>Меню</span></button>
+  <button class="tab-btn" data-tab="dishes"><span class="tab-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3v6.5a2.5 2.5 0 0 0 5 0V3M10 3v18M17 21V3c-2.2 1.6-3.2 4.2-3.2 7.5H17"/></svg></span><span>Страви</span></button>
+  <button class="tab-btn" data-tab="tracker"><span class="tab-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2c3.5 4.3 6 7.2 6 10.6a6 6 0 0 1-12 0c0-3.4 2.5-6.3 6-10.6z"/></svg></span><span>Трекер</span></button>
 </nav>
 
 <section id="menu-preset-modal" class="app-modal" hidden>
   <div class="app-modal-inner">
     <div class="app-modal-header">
-      <button type="button" class="app-modal-back" data-close-modal="menu-preset-modal">← Назад</button>
+      <button type="button" class="app-modal-back" data-close-modal="menu-preset-modal"><svg class="back-chevron" viewBox="0 0 12 20" width="12" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 2 10l8 8"/></svg>Назад</button>
       <h2 class="app-modal-title">Початковий план на 2 тижні</h2>
     </div>
     <p class="app-modal-hint">Це стартовий план, з якого починався застосунок. Він більше не підставляється автоматично в календар — тут лишається лише для довідки.</p>
@@ -109,7 +111,7 @@
 <section id="dish-form-modal" class="app-modal" hidden>
   <div class="app-modal-inner">
     <div class="app-modal-header">
-      <button type="button" class="app-modal-back" data-close-modal="dish-form-modal">← Назад</button>
+      <button type="button" class="app-modal-back" data-close-modal="dish-form-modal"><svg class="back-chevron" viewBox="0 0 12 20" width="12" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 2 10l8 8"/></svg>Назад</button>
       <h2 class="app-modal-title">Нова страва</h2>
     </div>
     <div class="dish-form-card">
@@ -133,7 +135,7 @@
 <section id="iron-modal" class="app-modal" hidden>
   <div class="app-modal-inner">
     <div class="app-modal-header">
-      <button type="button" class="app-modal-back" data-close-modal="iron-modal">← Назад</button>
+      <button type="button" class="app-modal-back" data-close-modal="iron-modal"><svg class="back-chevron" viewBox="0 0 12 20" width="12" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 2 10l8 8"/></svg>Назад</button>
       <h2 class="app-modal-title">Топ-100 заліза</h2>
     </div>
     <div class="iron-callout">
@@ -152,7 +154,7 @@
 <section id="chart-modal" class="app-modal" hidden>
   <div class="app-modal-inner">
     <div class="app-modal-header">
-      <button type="button" class="app-modal-back" data-close-modal="chart-modal">← Назад</button>
+      <button type="button" class="app-modal-back" data-close-modal="chart-modal"><svg class="back-chevron" viewBox="0 0 12 20" width="12" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 2 10l8 8"/></svg>Назад</button>
       <h2 class="app-modal-title">Графік заліза</h2>
       <button type="button" id="chart-share-btn" class="icon-btn chart-share-btn" title="Поділитись графіком">📤</button>
     </div>
@@ -180,7 +182,7 @@
 <section id="manual-add-modal" class="app-modal" hidden>
   <div class="app-modal-inner">
     <div class="app-modal-header">
-      <button type="button" class="app-modal-back" data-close-modal="manual-add-modal">← Назад</button>
+      <button type="button" class="app-modal-back" data-close-modal="manual-add-modal"><svg class="back-chevron" viewBox="0 0 12 20" width="12" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 2 10l8 8"/></svg>Назад</button>
       <h2 class="app-modal-title">Додати власну страву</h2>
     </div>
     <div class="dish-form-card">
@@ -198,6 +200,6 @@
   </div>
 </section>
 
-<script src="app.js?v=1.12"></script>
+<script src="app.js?v=1.13"></script>
 </body>
 </html>
