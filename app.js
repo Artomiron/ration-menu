@@ -1,6 +1,6 @@
 // ---------- Дані та збереження ----------
 
-const APP_VERSION = 'v1.16';
+const APP_VERSION = 'v1.17';
 
 const STORAGE_DISHES = 'ration.dishes.v1';
 const STORAGE_WEEKS = 'ration.weeks.v1';
@@ -1595,13 +1595,13 @@ trackerDateInput.addEventListener('change', () => {
   renderTracker();
 });
 
-function shiftTrackerWeek(dir) {
-  trackerDate.setDate(trackerDate.getDate() + dir * 7);
+function shiftTrackerDays(days) {
+  trackerDate.setDate(trackerDate.getDate() + days);
   renderTracker();
 }
 
-document.getElementById('tracker-prev-day').addEventListener('click', () => shiftTrackerWeek(-1));
-document.getElementById('tracker-next-day').addEventListener('click', () => shiftTrackerWeek(1));
+document.getElementById('tracker-prev-day').addEventListener('click', () => shiftTrackerDays(-1));
+document.getElementById('tracker-next-day').addEventListener('click', () => shiftTrackerDays(1));
 
 document.getElementById('tracker-week-strip').addEventListener('click', (e) => {
   const btn = e.target.closest('.ws-day');
@@ -1612,7 +1612,7 @@ document.getElementById('tracker-week-strip').addEventListener('click', (e) => {
   renderTracker();
 });
 
-attachWeekSwipe(document.getElementById('tracker-week-strip'), shiftTrackerWeek);
+attachWeekSwipe(document.getElementById('tracker-week-strip'), (dir) => shiftTrackerDays(dir * 7));
 openNativePicker(trackerDateInput);
 
 let manualAddMode = 'portion';
