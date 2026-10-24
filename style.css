@@ -1648,3 +1648,17 @@ button, select, summary, .combo-option, .tab-btn {
 .tab-btn[data-tab="tracker"] .tab-icon { color: #e5252a; }
 .tab-btn[data-tab="tracker"] svg,
 .tab-btn[data-tab="tracker"].active svg { fill: currentColor; fill-opacity: 1; }
+
+/* ---------- Трекер: компактне поле грамів ---------- */
+
+.tracker-row input.tracker-grams-input {
+  width: 46px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 2px;
+  border-radius: 8px;
+}
+
+.tracker-grams-wrap { gap: 3px; }
+
+.tracker-row { padding-top: 4px; padding-bottom: 4px; }
